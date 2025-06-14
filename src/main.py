@@ -7,11 +7,12 @@
 
 # Importando a classe de conectar_banco.py
 from config.conectar_banco import ConectarBanco
-
+from menu.interacao_principal import Menu
 import mysql.connector
 
 if __name__ == "__main__":
     c = ConectarBanco()
+    m = Menu()
     bd_config = {
         'host': 'localhost',
         'user': 'root',
@@ -21,10 +22,11 @@ if __name__ == "__main__":
 
     try:
         c.conectar_ao_banco(bd_config)
+        m.menu()
         c.fechar_conexao()
     except mysql.connector.Error as error:
         print("Erro de Banco de Dados: ", error)
     except mysql.connector.InterfaceError as error:
-        print("Erro de interface do MySQL: ", error)
+        print("Erro de Interface do MySQL: ", error)
     except Exception as error:
         print("Outro tipo de erro: ", error)

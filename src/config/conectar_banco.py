@@ -21,6 +21,6 @@ class ConectarBanco:
     
     # Função que fecha a conexão com o banco de dados
     def fechar_conexao(self):
-        self.conn.close()
         print("Banco fechado com sucesso")
+        self.conn.close()
         
