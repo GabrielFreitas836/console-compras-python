@@ -22,3 +22,4 @@ if __name__ == "__main__":
         c.fechar_conexao()
     except Exception as error:
         print("Erro ao fazer a conexão: ", error)
+        

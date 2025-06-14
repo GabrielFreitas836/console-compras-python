@@ -23,3 +23,4 @@ class ConectarBanco:
     def fechar_conexao(self):
         self.conn.close()
         print("Banco fechado com sucesso")
+        
