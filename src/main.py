@@ -8,6 +8,8 @@
 # Importando a classe de conectar_banco.py
 from config.conectar_banco import ConectarBanco
 
+import mysql.connector
+
 if __name__ == "__main__":
     c = ConectarBanco()
     bd_config = {
@@ -20,6 +22,9 @@ if __name__ == "__main__":
     try:
         c.conectar_ao_banco(bd_config)
         c.fechar_conexao()
+    except mysql.connector.Error as error:
+        print("Erro de Banco de Dados: ", error)
+    except mysql.connector.InterfaceError as error:
+        print("Erro de interface do MySQL: ", error)
     except Exception as error:
-        print("Erro ao fazer a conexão: ", error)
-        
+        print("Outro tipo de erro: ", error)
