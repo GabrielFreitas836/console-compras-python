@@ -21,9 +21,7 @@ if __name__ == "__main__":
     }
 
     try:
-        c.conectar_ao_banco(bd_config)
-        m.menu()
-        c.fechar_conexao()
+        m.menu(bd_config)
     except mysql.connector.Error as error:
         print("Erro de Banco de Dados: ", error)
     except mysql.connector.InterfaceError as error:
