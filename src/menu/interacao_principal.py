@@ -6,47 +6,47 @@
 
 """
 
-from config.conectar_banco import ConectarBanco
+from menu.interacao_cliente import Cliente
 from tabulate import tabulate
 import time
 
-class Menu(ConectarBanco):
+class Menu(Cliente):
+
+    # Função inicializadora da classe + init da classe Cliente
+    def __init__(self):
+        super().__init__()
+
     def menu(self, bd_config):
         while True:
             self.bd_config = bd_config
-            ConectarBanco.conectar_ao_banco(self, bd_config)
+            self.conectar_ao_banco(bd_config)
             print("=" *30)
             print("Olá! Seja bem-vindo(a) ao sistema de gerenciamento!")
             print("\n [1] - cliente\n [2] - gerente\n")
             entidade = int(input("Você é cliente ou gerente ? Aperte 1 ou 2 "))
             if entidade == 1:
                 print("Carregando lista de clientes...")
-                cursor = self.conn.cursor()
-                cursor.execute("SELECT idCliente, nome FROM clientes")
-                columms = [desc[0] for desc in cursor.description]
-                rows = cursor.fetchall()
+                Cliente.carregar_clientes(self, bd_config)
                 time.sleep(1)
-                if rows == []:
+                if self.rows == []:
                     print("=" *30)
                     print("\n [1] - sim\n [2] - não\n")
-                    registrar_sistema = int(input("Não há algum cliente registrado! Gostaria de se registrar no sistema ? "))
-                    if registrar_sistema == 2:
-                        print("=" *30)
-                        print("Sem problemas! Até mais!")
-                        ConectarBanco.fechar_conexao(self)
+                    continuar = Cliente.registrar_cliente(self)
+                    if not continuar:
                         break
-                    elif registrar_sistema == 1:
-                        print("=" *30)
-                        nome = input("Digite seu nome: ")
-                        idade = int(input("Digite sua idade: "))
-                        cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s)", (nome, idade,))
-                        self.conn.commit()
-                        time.sleep(1)
-                        print(f"Cliente {nome} adicionado com sucesso!")
-                    else:
-                        print("=" *30)
-                        print("Por favor, digite [1] para se registrar ou [2] para sair do sistema")
                 else:
-                    print(columms)
-                    for row in rows:
-                        print(tabulate(row, headers=columms, tablefmt="grid"))
+                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                    time.sleep(1)    
+                    print("\n [1] - sim\n [2] - não\n")
+                    continuar = Cliente.registrar_cliente(self)
+                    if not continuar:
+                        break
+            elif entidade == 2:
+                print("Bem-vindo, gerente!")
+                break
+            else:
+                print("Por favor, digite [1] se for cliente ou [2] se for gerente")
+                time.sleep(0.8)
+                print("Retornando ao início...")
+                time.sleep(1.5)
+                continue        

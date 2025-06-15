@@ -6,12 +6,10 @@
 """
 
 # Importando a classe de conectar_banco.py
-from config.conectar_banco import ConectarBanco
 from menu.interacao_principal import Menu
 import mysql.connector
 
 if __name__ == "__main__":
-    c = ConectarBanco()
     m = Menu()
     bd_config = {
         'host': 'localhost',
