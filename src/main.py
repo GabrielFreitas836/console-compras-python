@@ -8,14 +8,18 @@
 # Importando a classe de conectar_banco.py
 from menu.interacao_principal import Menu
 import mysql.connector
+from dotenv import load_dotenv
+import os
 
 if __name__ == "__main__":
     m = Menu()
+    load_dotenv()
     bd_config = {
-        'host': 'localhost',
-        'user': 'root',
-        'password': 'GgFf19072005#@',
-        'database': 'sistema_mercado'
+        'host': os.getenv("DB_HOST"),
+        'user': os.getenv("DB_USER"),
+        'port': 3306,
+        'password': os.getenv("DB_PASSWORD"),
+        'database': os.getenv("DB_DATABASE")
     }
 
     try:

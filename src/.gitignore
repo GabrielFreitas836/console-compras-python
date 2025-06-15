@@ -1,0 +1,28 @@
+# Ignora arquivos e diretórios comuns em projetos Python
+
+# Arquivos de ambiente
+.env
+*.env
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+
+# Ambiente virtual
+venv/
+env/
+
+# Arquivos de log
+*.log
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# IDEs (VSCode, PyCharm, etc)
+.vscode/
+.idea/
+
+# Arquivos de testes temporários
+*.swp
+*.bak
