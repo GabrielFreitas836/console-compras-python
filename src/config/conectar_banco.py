@@ -27,7 +27,9 @@ class ConectarBanco:
         return self.conn
     
     # Função que fecha a conexão com o banco de dados
+    # Verificação de conexão aberta para fechar essa conexão
     def fechar_conexao(self):
-        print("Banco fechado com sucesso")
-        self.conn.close()
+        if self.conn and self.conn.is_connected():
+            print("Banco fechado com sucesso")
+            self.conn.close()
         
