@@ -26,9 +26,9 @@ class Cliente(ConectarBanco):
             registrar_sistema = int(input("Não há algum cliente registrado! Gostaria de se registrar no sistema ? "))
             if registrar_sistema == 2:
                 print("=" *30)
-                print("Sem problemas! Até mais!")
-                ConectarBanco.fechar_conexao(self)
-                return False
+                print("Sem problemas! Retornando ao início...")
+                time.sleep(1.5)
+                return True
             elif registrar_sistema == 1:
                 print("=" *30)
                 nome = input("Digite seu nome: ")
@@ -47,9 +47,9 @@ class Cliente(ConectarBanco):
             registrar_sistema = int(input("Gostaria de se registrar como outro cliente ? "))
             if registrar_sistema == 2:
                 print("=" *30)
-                print("Sem problemas! Até mais!")
-                ConectarBanco.fechar_conexao(self)
-                return False
+                print("Sem problemas! Retornando ao início...")
+                time.sleep(1.5)
+                return True
             elif registrar_sistema == 1:
                 print("=" *30)
                 nome = input("Digite seu nome: ")
@@ -64,5 +64,4 @@ class Cliente(ConectarBanco):
                 print("=" *30)
                 print("Por favor, digite [1] para se registrar ou [2] para sair do sistema")
                 return True
-
-        
+    
