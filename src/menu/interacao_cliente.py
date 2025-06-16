@@ -26,12 +26,12 @@ class Cliente(ConectarBanco):
         if self.rows == []:
             registrar_sistema = int(input("Não há algum cliente registrado! Gostaria de se registrar no sistema ? "))
             if registrar_sistema == 2:
-                print("=" *30)
+                print("=" *50)
                 print("Sem problemas! Retornando ao início...")
                 time.sleep(1.5)
                 return True
             elif registrar_sistema == 1:
-                print("=" *30)
+                print("=" *50)
                 nome = input("Digite seu nome: ")
                 idade = int(input("Digite sua idade: "))
                 cursor = self.conn.cursor()
@@ -41,18 +41,17 @@ class Cliente(ConectarBanco):
                 print(f"Cliente {nome} adicionado com sucesso!")
                 return True
             else:
-                print("=" *30)
+                print("=" *50)
                 print("Por favor, digite [1] para se registrar ou [2] para sair do sistema")
                 return True
         else:
             registrar_sistema = int(input("Gostaria de se registrar como outro cliente ? "))
             if registrar_sistema == 2:
-                print("=" *30)
-                print("Sem problemas! Retornando ao início...")
+                print("=" *50)
                 time.sleep(1.5)
                 return True
             elif registrar_sistema == 1:
-                print("=" *30)
+                print("=" *50)
                 nome = input("Digite seu nome: ")
                 idade = int(input("Digite sua idade: "))
                 cursor = self.conn.cursor()
@@ -62,7 +61,7 @@ class Cliente(ConectarBanco):
                 print(f"Cliente {nome} adicionado com sucesso!")
                 return True
             else:
-                print("=" *30)
+                print("=" *50)
                 print("Por favor, digite [1] para se registrar ou [2] para sair do sistema")
                 return True
     
