@@ -7,46 +7,47 @@
 """
 
 from menu.interacao_cliente import Cliente
+from menu.interacao_gerente import Gerente
 from tabulate import tabulate
 import time
 
-class Menu(Cliente):
+class Menu:
 
-    # Função inicializadora da classe + init da classe Cliente
     def __init__(self):
-        super().__init__()
+        self.cliente = Cliente()
+        self.gerente = Gerente()
 
     def menu(self, bd_config):
         while True:
             self.bd_config = bd_config
-            self.conectar_ao_banco(bd_config)
+            self.cliente.conectar_ao_banco(bd_config)
             print("=" *30)
             print("Olá! Seja bem-vindo(a) ao sistema de gerenciamento!")
             print("\n [1] - cliente\n [2] - gerente\n")
             entidade = int(input("Você é cliente ou gerente ? Aperte 1 ou 2 "))
             if entidade == 1:
                 print("Carregando lista de clientes...")
-                Cliente.carregar_clientes(self, bd_config)
+                self.cliente.carregar_clientes(bd_config)
                 time.sleep(1)
-                if self.rows == []:
+                if self.cliente.rows == []:
                     print("=" *30)
                     print("\n [1] - sim\n [2] - não\n")
-                    continuarRegistro = Cliente.registrar_cliente(self)
+                    continuarRegistro = self.cliente.registrar_cliente()
                     if not continuarRegistro:
                         break
 
-                    continuarEscolha = Cliente.escolher_cliente(self)
+                    continuarEscolha = self.cliente.escolher_cliente()
                     if not continuarEscolha:
                         break
                 else:
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                    print(tabulate(self.cliente.rows, headers=self.cliente.columms, tablefmt="grid"))
                     time.sleep(1)    
                     print("\n [1] - sim\n [2] - não\n")
-                    continuarRegistro = Cliente.registrar_cliente(self)
+                    continuarRegistro = self.cliente.registrar_cliente()
                     if not continuarRegistro:
                         break
-                    
-                    continuarEscolha = Cliente.escolher_cliente(self)
+
+                    continuarEscolha = self.cliente.escolher_cliente()
                     if not continuarEscolha:
                         break
             elif entidade == 2:
