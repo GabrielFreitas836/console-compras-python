@@ -31,15 +31,23 @@ class Menu(Cliente):
                 if self.rows == []:
                     print("=" *30)
                     print("\n [1] - sim\n [2] - não\n")
-                    continuar = Cliente.registrar_cliente(self)
-                    if not continuar:
+                    continuarRegistro = Cliente.registrar_cliente(self)
+                    if not continuarRegistro:
+                        break
+
+                    continuarEscolha = Cliente.escolher_cliente(self)
+                    if not continuarEscolha:
                         break
                 else:
                     print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
                     time.sleep(1)    
                     print("\n [1] - sim\n [2] - não\n")
-                    continuar = Cliente.registrar_cliente(self)
-                    if not continuar:
+                    continuarRegistro = Cliente.registrar_cliente(self)
+                    if not continuarRegistro:
+                        break
+                    
+                    continuarEscolha = Cliente.escolher_cliente(self)
+                    if not continuarEscolha:
                         break
             elif entidade == 2:
                 print("Bem-vindo, gerente!")

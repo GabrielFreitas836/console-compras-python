@@ -7,6 +7,7 @@
 """
 
 from config.conectar_banco import ConectarBanco
+from tabulate import tabulate
 import time
 
 # Função inicializadora da classe + init da classe ConectarBanco
@@ -65,3 +66,12 @@ class Cliente(ConectarBanco):
                 print("Por favor, digite [1] para se registrar ou [2] para sair do sistema")
                 return True
     
+    def escolher_cliente(self):
+        time.sleep(1.5)
+        Cliente.carregar_clientes(self, self.bd_config)
+        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+        escolha = int(input("Escolha na lista de clientes quem é você pelo ID: "))
+        for id, nome in self.rows:
+            if escolha == id:
+                print(f"Olá, {nome}!")
+                return False
