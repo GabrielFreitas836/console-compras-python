@@ -14,10 +14,13 @@ import time
 
 class Menu:
 
+    # Função inicializadora da classe
+    # Instancia as class Cliente e Gerente
     def __init__(self):
         self.cliente = Cliente()
         self.gerente = Gerente()
 
+    # Função principal da aplicação que coordena toda a lógica do programa, utilizando as funções advindas de interacao_cliente e interacao_gerente
     def menu(self, bd_config):
         while True:
             banco = ConectarBanco()

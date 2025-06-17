@@ -16,6 +16,7 @@ class Cliente(ConectarBanco):
         super().__init__()
         self.conn = conn
 
+    # Função de carregar os dados da tabela 'clientes'
     def carregar_clientes(self, bd_config):
         self.bd_config = bd_config
         cursor = self.conn.cursor()
@@ -23,6 +24,8 @@ class Cliente(ConectarBanco):
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
 
+    # Função de registro de clientes para as duas situações possíveis: quando não há cliente registrado e quando há cliente(s) registrado(os)
+    # Se houver clientes registrados, ele mostrará em interacao_principal a tabela de clientes com os dados existentes
     def registrar_cliente(self):
         if self.rows == []:
             registrar_sistema = int(input("Não há algum cliente registrado! Gostaria de se registrar no sistema ? "))
@@ -66,6 +69,8 @@ class Cliente(ConectarBanco):
                 print("Por favor, digite [1] para se registrar ou [2] para sair do sistema")
                 return True
     
+    # Função de escolher qual cliente está utilizando o sistema
+    # Utilizando o loop for para iterar por todos os IDs do banco até achar por aquele que é igual à escolha do usuário
     def escolher_cliente(self):
         time.sleep(1.5)
         Cliente.carregar_clientes(self, self.bd_config)

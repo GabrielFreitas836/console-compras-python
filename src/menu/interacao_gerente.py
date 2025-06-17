@@ -15,6 +15,7 @@ class Gerente(ConectarBanco):
         super().__init__()
         self.conn = conn
 
+    # Função principal que gerencia as opções do gerente
     def opcoes_gerente(self):
         print("\n[1] - Clientes\n[2] - Produtos\n")
         escolha = int(input("Em qual categoria gostaria de mexer ? "))
