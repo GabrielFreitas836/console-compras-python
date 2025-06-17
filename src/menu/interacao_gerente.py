@@ -11,8 +11,9 @@ import time
 
 # Função inicializadora da classe + init da classe ConectarBanco
 class Gerente(ConectarBanco):
-    def __init__(self):
+    def __init__(self, conn = None):
         super().__init__()
+        self.conn = conn
 
     def opcoes_gerente(self):
         print("\n[1] - Clientes\n[2] - Produtos\n")

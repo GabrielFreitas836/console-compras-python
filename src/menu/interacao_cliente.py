@@ -12,8 +12,9 @@ import time
 
 # Função inicializadora da classe + init da classe ConectarBanco
 class Cliente(ConectarBanco):
-    def __init__(self):
+    def __init__(self, conn = None):
         super().__init__()
+        self.conn = conn
 
     def carregar_clientes(self, bd_config):
         self.bd_config = bd_config

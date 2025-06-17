@@ -6,6 +6,7 @@
 
 """
 
+from config.conectar_banco import ConectarBanco
 from menu.interacao_cliente import Cliente
 from menu.interacao_gerente import Gerente
 from tabulate import tabulate
@@ -19,9 +20,11 @@ class Menu:
 
     def menu(self, bd_config):
         while True:
+            banco = ConectarBanco()
+            banco.conectar_ao_banco(bd_config)
             self.bd_config = bd_config
-            self.cliente.conectar_ao_banco(bd_config)
-            self.gerente.conectar_ao_banco(bd_config)
+            self.cliente = Cliente(conn = banco.conn)
+            self.gerente = Gerente(conn = banco.conn)
             print("=" *50)
             print("Olá! Seja bem-vindo(a) ao sistema de gerenciamento!")
             print("\n [1] - cliente\n [2] - gerente\n")
