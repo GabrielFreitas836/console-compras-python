@@ -32,7 +32,7 @@ class Cliente(ConectarBanco):
             if registrar_sistema == 2:
                 print("=" *50)
                 print("Sem problemas! Retornando ao início...")
-                time.sleep(1.5)
+                time.sleep(1)
                 return True
             elif registrar_sistema == 1:
                 print("=" *50)
@@ -52,7 +52,7 @@ class Cliente(ConectarBanco):
             registrar_sistema = int(input("Gostaria de se registrar como outro cliente ? "))
             if registrar_sistema == 2:
                 print("=" *50)
-                time.sleep(1.5)
+                time.sleep(1)
                 return True
             elif registrar_sistema == 1:
                 print("=" *50)
@@ -65,18 +65,32 @@ class Cliente(ConectarBanco):
                 print(f"Cliente {nome} adicionado com sucesso!")
                 return True
             else:
+                time.sleep(1)
                 print("=" *50)
-                print("Por favor, digite [1] para se registrar ou [2] para sair do sistema")
+                print("Por favor, digite [1] para se registrar ou [2] para escolher seu usuário")
+                print("\n")
+                self.carregar_clientes(self.bd_config)
+                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                self.registrar_cliente()
                 return True
     
     # Função de escolher qual cliente está utilizando o sistema
     # Utilizando o loop for para iterar por todos os IDs do banco até achar por aquele que é igual à escolha do usuário
     def escolher_cliente(self):
-        time.sleep(1.5)
-        Cliente.carregar_clientes(self, self.bd_config)
-        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-        escolha = int(input("Escolha na lista de clientes quem é você pelo ID: "))
-        for id, nome in self.rows:
-            if escolha == id:
-                print(f"Olá, {nome}!")
-                return False
+        while True:
+            time.sleep(1)
+            Cliente.carregar_clientes(self, self.bd_config)
+            print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+
+            try:
+                escolha = int(input("Escolha na lista de clientes quem é você pelo ID: "))
+            except ValueError:
+                print("Por favor, digite um número válido!")
+                continue
+
+            for id, nome in self.rows:
+                if escolha == id:
+                    print(f"Olá, {nome}!")
+                    return False
+            
+            print("Cliente não encontrado! Tente novamente!")
