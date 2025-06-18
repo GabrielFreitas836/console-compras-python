@@ -73,5 +73,5 @@ class Menu:
                 print("Por favor, digite [1] se for cliente ou [2] se for gerente")
                 time.sleep(0.8)
                 print("Retornando ao início...")
-                time.sleep(1.5)
+                time.sleep(1.2)
                 continue        
