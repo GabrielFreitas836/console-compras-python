@@ -30,41 +30,11 @@ class Gerente(ConectarBanco):
                 print("=" *50)
 
                 if subescolha == 1:
-                    nome = input("Digite o nome do cliente: ")
-                    idade = int(input("Digite a idade do cliente: "))
-                    cursor = self.conn.cursor()
-                    cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s)", (nome, idade,))
-                    self.conn.commit()
-                    time.sleep(1)
-                    print(f"Cliente {nome} adicionado com sucesso!")
+                    self.adicionar_cliente()
                 elif subescolha == 2:
                     self.atualizar_cliente()
                 elif subescolha == 3:
-                    time.sleep(1)
-                    print("\n")
-                    cursor = self.conn.cursor()
-                    cursor.execute("SELECT idCliente, nome FROM clientes")
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                    time.sleep(1)
-                    while True:
-                        print("\n")
-                        try:
-                            clienteDeletado = int(input("Escolha na lista de clientes quem você quer deletar pelo ID: "))
-                        except ValueError:
-                            print("Por favor, digite um número válido!")
-                            continue
-
-                        for id, nome in self.rows:
-                            if clienteDeletado == id:
-                                cursor.execute("DELETE FROM clientes WHERE idCliente = %s", (clienteDeletado,))
-                                self.conn.commit()
-                                print(f"Cliente {nome} deletado com sucesso")
-                                break
-                        
-                        print("Cliente não encontrado! Tente novamente!")
-                    
+                    self.deletar_cliente()
             case 2:
                 print("Abrindo aba de produtos...")
                 time.sleep(1)
@@ -73,6 +43,16 @@ class Gerente(ConectarBanco):
                 print("=" *50)
             case _:
                 print("Escolha 1 ou 2")
+
+    # Função de adicionar um novo cliente
+    def adicionar_cliente(self):
+        nome = input("Digite o nome do cliente: ")
+        idade = int(input("Digite a idade do cliente: "))
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s)", (nome, idade,))
+        self.conn.commit()
+        time.sleep(1)
+        print(f"Cliente {nome} adicionado com sucesso!")
 
     # Função de atualização dos dados de um cliente
     def atualizar_cliente(self):
@@ -177,3 +157,35 @@ class Gerente(ConectarBanco):
                     continue
                 else:
                     break
+    
+    def deletar_cliente(self):
+        time.sleep(1)
+        print("\n")
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT idCliente, nome FROM clientes")
+        self.columms = [desc[0] for desc in cursor.description]
+        self.rows = cursor.fetchall()
+        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+        time.sleep(1)
+        while True:
+            print("\n")
+            try:
+                clienteDeletado = int(input("Escolha na lista de clientes quem você quer deletar pelo ID: "))
+            except ValueError:
+                print("Por favor, digite um número válido!")
+                continue
+
+            for id, nome in self.rows:
+                if clienteDeletado == id:
+                        cursor.execute("DELETE FROM clientes WHERE idCliente = %s", (clienteDeletado,))
+                        self.conn.commit()
+                        id = clienteDeletado
+                        print(f"Cliente {nome} deletado com sucesso")
+                        break
+                        
+            if id != clienteDeletado:
+                print("Cliente não encontrado! Tente novamente!")
+                continue
+            else:
+                break
+                    
