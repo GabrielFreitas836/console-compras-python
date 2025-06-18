@@ -17,32 +17,56 @@ class Gerente(ConectarBanco):
 
     # Função principal que gerencia as opções do gerente
     def opcoes_gerente(self):
-        print("\n[1] - Clientes\n[2] - Produtos\n")
-        escolha = int(input("Em qual categoria gostaria de mexer ? "))
+        while True:
+            print("\n[1] - Clientes\n[2] - Produtos\n")
+            escolha = int(input("Em qual categoria gostaria de mexer ? "))
 
-        match escolha:
-            case 1:
-                print("Abrindo aba de clientes...")
-                time.sleep(1)
-                print("=" *50)
-                print("\n[1] - Adicionar um novo cliente\n[2] - Alterar dados de um cliente existente\n[3] - Deletar um cliente existente\n")
-                subescolha = int(input("O que você gostaria de fazer ? "))
-                print("=" *50)
+            match escolha:
+                case 1:
+                    print("Abrindo aba de clientes...")
+                    time.sleep(1)
+                    print("=" *50)
+                    print("\n[1] - Adicionar um novo cliente\n[2] - Alterar dados de um cliente existente\n[3] - Deletar um cliente existente\n[4] - Mostrar tabela de clientes\n[5] - Limpar tabela de clientes\n")
+                    subescolha = int(input("O que você gostaria de fazer ? "))
+                    print("=" *50)
 
-                if subescolha == 1:
-                    self.adicionar_cliente()
-                elif subescolha == 2:
-                    self.atualizar_cliente()
-                elif subescolha == 3:
-                    self.deletar_cliente()
-            case 2:
-                print("Abrindo aba de produtos...")
-                time.sleep(1)
-                print("=" *50)
-                print("\n[1] - Adicionar um novo produto\n[2] - Alterar dados de um produto existente\n[3] - Deletar um produto existente\n")
-                print("=" *50)
-            case _:
-                print("Escolha 1 ou 2")
+                    if subescolha == 1:
+                        self.adicionar_cliente()
+                        break
+                    elif subescolha == 2:
+                        self.atualizar_cliente()
+                        break
+                    elif subescolha == 3:
+                        self.deletar_cliente()
+                        break
+                    elif subescolha == 4:
+                        time.sleep(1)
+                        print("\n")
+                        cursor = self.conn.cursor()
+                        cursor.execute("SELECT idCliente, nome, idade FROM clientes")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        break
+
+                    elif subescolha == 5:
+                        self.limpar_clientes()
+                        break
+                    else:
+                        print("Opção inválida! Retornando ao início...")
+                        time.sleep(0.5)
+                        continue
+                case 2:
+                    print("Abrindo aba de produtos...")
+                    time.sleep(1)
+                    print("=" *50)
+                    print("\n[1] - Adicionar um novo produto\n[2] - Alterar dados de um produto existente\n[3] - Deletar um produto existente\n")
+                    print("=" *50)
+                case _:
+                    print("=" *50)
+                    print("\n")
+                    print("Escolha 1 ou 2")
+                    continue
 
     # Função de adicionar um novo cliente
     def adicionar_cliente(self):
@@ -158,6 +182,7 @@ class Gerente(ConectarBanco):
                 else:
                     break
     
+    # Função de deletar um cliente
     def deletar_cliente(self):
         time.sleep(1)
         print("\n")
@@ -182,10 +207,27 @@ class Gerente(ConectarBanco):
                         id = clienteDeletado
                         print(f"Cliente {nome} deletado com sucesso")
                         break
-                        
+
             if id != clienteDeletado:
                 print("Cliente não encontrado! Tente novamente!")
                 continue
             else:
                 break
+    
+    # Função de limpeza total da tabela clientes
+    def limpar_clientes(self):
+        time.sleep(1)
+        cursor = self.conn.cursor()
+        print("Desativando restrições de chaves estrangeiras temporariamente...")
+        time.sleep(1.3)
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+        print("Limpando a tabela clientes...")
+        time.sleep(1.3)
+        cursor.execute("TRUNCATE TABLE clientes")
+        print("Tabela clientes limpa com sucesso!")
+        time.sleep(0.3)
+        print("Reativando restrições de chaves estrangeiras...")
+        time.sleep(0.8)
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+        self.conn.commit()
                     
