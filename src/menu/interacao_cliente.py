@@ -79,10 +79,12 @@ class Cliente(ConectarBanco):
     def escolher_cliente(self):
         while True:
             time.sleep(1)
-            Cliente.carregar_clientes(self, self.bd_config)
+            print("\n")
+            self.carregar_clientes(self.bd_config)
             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
             try:
+                print("\n")
                 escolha = int(input("Escolha na lista de clientes quem é você pelo ID: "))
             except ValueError:
                 print("Por favor, digite um número válido!")
@@ -91,6 +93,12 @@ class Cliente(ConectarBanco):
             for id, nome in self.rows:
                 if escolha == id:
                     print(f"Olá, {nome}!")
+                    id = escolha
                     return False
-            
-            print("Cliente não encontrado! Tente novamente!")
+                
+
+            if id != escolha:
+                print("Cliente não encontrado! Tente novamente!")
+                continue
+            else:
+                break
