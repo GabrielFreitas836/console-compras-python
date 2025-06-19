@@ -47,6 +47,7 @@ class Menu:
                         break
                     
                     if self.cliente.rows == []:
+                        print("\n")
                         pass
                     else:
                         continuarEscolha = self.cliente.escolher_cliente()
