@@ -41,14 +41,18 @@ class Menu:
                     print("=" *50)
                     print("\n [1] - sim\n [2] - não\n")
                     continuarRegistro = self.cliente.registrar_cliente()
+
                     if not continuarRegistro:
                         self.cliente.fechar_conexao()
                         break
-
-                    continuarEscolha = self.cliente.escolher_cliente()
-                    if not continuarEscolha:
-                        self.cliente.fechar_conexao()
-                        break
+                    
+                    if self.cliente.rows == []:
+                        pass
+                    else:
+                        continuarEscolha = self.cliente.escolher_cliente()
+                        if not continuarEscolha:
+                            self.cliente.fechar_conexao()
+                            break
                 else:
                     print(tabulate(self.cliente.rows, headers=self.cliente.columms, tablefmt="grid"))
                     time.sleep(1)    
