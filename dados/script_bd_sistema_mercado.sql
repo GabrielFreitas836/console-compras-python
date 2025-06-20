@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     FOREIGN KEY (pagamento_idPagamento) REFERENCES pagamento(idPagamento)
 );
 
-CREATE TABLE IF NOT EXISTS itensPedidos (
+CREATE TABLE IF NOT EXISTS itenspedidos (
 	idItens INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     quantidade INT,
     produto_idProduto INT NOT NULL,
