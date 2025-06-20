@@ -32,16 +32,17 @@ CREATE TABLE IF NOT EXISTS produtos (
 CREATE TABLE IF NOT EXISTS pedidos (
 	idPedido INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     cliente_idCliente INT NOT NULL,
+    item_idItem INT NOT NULL,
     pagamento_idPagamento INT NOT NULL,
     FOREIGN KEY (cliente_idCliente) REFERENCES clientes(idCliente),
+    FOREIGN KEY (item_idItem) REFERENCES itensPedidos(idItens),
     FOREIGN KEY (pagamento_idPagamento) REFERENCES pagamento(idPagamento)
 );
 
 CREATE TABLE IF NOT EXISTS itensPedidos (
 	idItens INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     quantidade INT,
-    pedido_idPedido INT NOT NULL,
     produto_idProduto INT NOT NULL,
-    FOREIGN KEY (produto_idProduto) REFERENCES produtos(idProduto),
-    FOREIGN KEY (pedido_idPedido) REFERENCES pedidos(idPedido)
+    valorTotal DECIMAL(10, 2),
+    FOREIGN KEY (produto_idProduto) REFERENCES produtos(idProduto)
 );
