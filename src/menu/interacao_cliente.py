@@ -7,6 +7,7 @@
 """
 
 from config.conectar_banco import ConectarBanco
+from menu.controle_compras import Compras
 from tabulate import tabulate
 import time
 
@@ -15,6 +16,7 @@ class Cliente(ConectarBanco):
     def __init__(self, conn = None):
         super().__init__()
         self.conn = conn
+        self.compras = Compras(self.conn)
 
     # Função de carregar os dados da tabela 'clientes'
     def carregar_clientes(self, bd_config):
@@ -92,9 +94,10 @@ class Cliente(ConectarBanco):
 
             for id, nome in self.rows:
                 if escolha == id:
-                    print(f"Olá, {nome}!")
+                    self.compras.carregar_produtos()
+                    self.compras.adicionar_ao_carrinho()
                     id = escolha
-                    return False
+                    return True
                 
 
             if id != escolha:
