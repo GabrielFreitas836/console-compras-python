@@ -26,6 +26,8 @@ class Compras(ConectarBanco):
         self.rows = cursor.fetchall()
         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
+    # Função de inserção de dados na tabela 'pedidos' 
+    #  Carregar os dados dos pedidos junto à outras colunas das outras tabelas
     def carregar_pedidos(self, idcliente):
         self.cliente = idcliente
         cursor = self.conn.cursor()
