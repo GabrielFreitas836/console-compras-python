@@ -43,7 +43,7 @@ class Gerente(ConectarBanco):
                         time.sleep(1)
                         print("\n")
                         cursor = self.conn.cursor()
-                        cursor.execute("SELECT idCliente, nome, idade FROM clientes")
+                        cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
                         self.columms = [desc[0] for desc in cursor.description]
                         self.rows = cursor.fetchall()
                         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
@@ -73,7 +73,7 @@ class Gerente(ConectarBanco):
         nome = input("Digite o nome do cliente: ")
         idade = int(input("Digite a idade do cliente: "))
         cursor = self.conn.cursor()
-        cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s)", (nome, idade,))
+        cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s);", (nome, idade,))
         self.conn.commit()
         time.sleep(1)
         print(f"Cliente {nome} adicionado com sucesso!")
@@ -87,7 +87,7 @@ class Gerente(ConectarBanco):
             time.sleep(1)
             print("=" *50)
             cursor = self.conn.cursor()
-            cursor.execute("SELECT idCliente, nome FROM clientes")
+            cursor.execute("SELECT idCliente, nome FROM clientes;")
             self.columms = [desc[0] for desc in cursor.description]
             self.rows = cursor.fetchall()
             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
@@ -104,7 +104,7 @@ class Gerente(ConectarBanco):
                 for id, nome in self.rows:
                     if idCliente == id:
                         cursor = self.conn.cursor()
-                        cursor.execute("UPDATE clientes SET nome = %s WHERE idCliente = %s", (novoNome, idCliente, ))
+                        cursor.execute("UPDATE clientes SET nome = %s WHERE idCliente = %s;", (novoNome, idCliente, ))
                         self.conn.commit()
                         nome = novoNome
                         print("Cliente teve seu nome alterado com sucesso!")
@@ -119,7 +119,7 @@ class Gerente(ConectarBanco):
         elif escolha == 2:
             time.sleep(1)
             cursor = self.conn.cursor()
-            cursor.execute("SELECT idCliente, nome, idade FROM clientes")
+            cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
             self.columms = [desc[0] for desc in cursor.description]
             self.rows = cursor.fetchall()
             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
@@ -136,7 +136,7 @@ class Gerente(ConectarBanco):
                 for id, nome, idade in self.rows:
                     if id == idCliente:
                         cursor = self.conn.cursor()
-                        cursor.execute("UPDATE clientes SET idade = %s WHERE idCliente = %s", (novaIdade, idCliente, ))
+                        cursor.execute("UPDATE clientes SET idade = %s WHERE idCliente = %s;", (novaIdade, idCliente, ))
                         self.conn.commit()
                         idade = novaIdade
                         print("Cliente teve sua idade alterada com sucesso!")
@@ -151,7 +151,7 @@ class Gerente(ConectarBanco):
         elif escolha == 3:
             time.sleep(1)
             cursor = self.conn.cursor()
-            cursor.execute("SELECT idCliente, nome, idade FROM clientes")
+            cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
             self.columms = [desc[0] for desc in cursor.description]
             self.rows = cursor.fetchall()
             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
@@ -169,7 +169,7 @@ class Gerente(ConectarBanco):
                 for id, nome, idade in self.rows:
                     if id == idCliente:
                         cursor = self.conn.cursor()
-                        cursor.execute("UPDATE clientes SET nome = %s, idade = %s WHERE idCliente = %s", (novoNome, novaIdade, idCliente, ))
+                        cursor.execute("UPDATE clientes SET nome = %s, idade = %s WHERE idCliente = %s;", (novoNome, novaIdade, idCliente, ))
                         self.conn.commit()
                         nome = novoNome
                         idade = novaIdade
@@ -187,7 +187,7 @@ class Gerente(ConectarBanco):
         time.sleep(1)
         print("\n")
         cursor = self.conn.cursor()
-        cursor.execute("SELECT idCliente, nome FROM clientes")
+        cursor.execute("SELECT idCliente, nome FROM clientes;")
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
@@ -202,7 +202,7 @@ class Gerente(ConectarBanco):
 
             for id, nome in self.rows:
                 if clienteDeletado == id:
-                        cursor.execute("DELETE FROM clientes WHERE idCliente = %s", (clienteDeletado,))
+                        cursor.execute("DELETE FROM clientes WHERE idCliente = %s;", (clienteDeletado,))
                         self.conn.commit()
                         id = clienteDeletado
                         print(f"Cliente {nome} deletado com sucesso")
@@ -220,14 +220,14 @@ class Gerente(ConectarBanco):
         cursor = self.conn.cursor()
         print("Desativando restrições de chaves estrangeiras temporariamente...")
         time.sleep(1.3)
-        cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
         print("Limpando a tabela clientes...")
         time.sleep(1.3)
-        cursor.execute("TRUNCATE TABLE clientes")
+        cursor.execute("TRUNCATE TABLE clientes;")
         print("Tabela clientes limpa com sucesso!")
         time.sleep(0.3)
         print("Reativando restrições de chaves estrangeiras...")
         time.sleep(0.8)
-        cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
                     
