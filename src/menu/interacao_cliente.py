@@ -46,7 +46,7 @@ class Cliente(ConectarBanco):
                 return True
             else:
                 print("=" *50)
-                print("Por favor, digite [1] para se registrar ou [2] para sair do sistema")
+                print("Por favor, digite [1] para se registrar ou [2] para retornar ao início")
                 return True
         else:
             registrar_sistema = int(input("Gostaria de se registrar como outro cliente ? "))
