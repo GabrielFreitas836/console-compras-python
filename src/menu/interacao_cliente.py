@@ -95,7 +95,7 @@ class Cliente(ConectarBanco):
             for id, nome in self.rows:
                 if escolha == id:
                     self.compras.carregar_produtos()
-                    self.compras.adicionar_ao_carrinho()
+                    self.compras.adicionar_ao_carrinho(escolha)
                     id = escolha
                     return True
                 
