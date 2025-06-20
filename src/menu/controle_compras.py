@@ -21,13 +21,28 @@ class Compras(ConectarBanco):
         print("\n")
         cursor = self.conn.cursor()
         cursor.execute("SELECT p.idProduto, p.descricao AS produto, p.valorUnitario, c.descricao AS categoria " \
-        "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria")
+        "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria;")
+        self.columms = [desc[0] for desc in cursor.description]
+        self.rows = cursor.fetchall()
+        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+
+    def carregar_pedidos(self, idcliente):
+        self.cliente = idcliente
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO pedidos (cliente_idCliente, item_idItem, pagamento_idPagamento) VALUES (%s, 1, 4);", (idcliente,))
+        self.conn.commit()
+        cursor.execute("SELECT cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
+        "FROM itenspedidos it " \
+        "LEFT JOIN pedidos p ON p.item_idItem = it.idItens " \
+        "LEFT JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+        "LEFT JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
+        "LEFT JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria;")
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
     # Função de adicionar produtos ao 'itenspedidos'
-    def adicionar_ao_carrinho(self):
+    def adicionar_ao_carrinho(self, idcliente):
         print("\n")
         while True:
             valorTotal = 0.0
@@ -39,7 +54,7 @@ class Compras(ConectarBanco):
                 print("Por favor, digite um valor válido")
 
             cursor = self.conn.cursor()
-            cursor.execute("SELECT idProduto, valorUnitario FROM produtos")
+            cursor.execute("SELECT idProduto, valorUnitario FROM produtos;")
             self.rows = cursor.fetchall()
             
             for id, valor in self.rows:
@@ -53,12 +68,15 @@ class Compras(ConectarBanco):
                 time.sleep(1)
                 continue
             else:
-                cursor.execute("INSERT INTO itenspedidos (quantidade, produto_idProduto, valorTotal) VALUES (%s, %s, %s)", (quantidadeProduto, escolhaProduto, valorTotal))
+                cursor.execute("INSERT INTO itenspedidos (quantidade, produto_idProduto, valorTotal) VALUES (%s, %s, %s)", (quantidadeProduto, escolhaProduto, valorTotal,))
                 self.conn.commit()
                 print("Item salvo com sucesso!")
                 time.sleep(0.3)
                 print("=" *50)
-                print("\n[1] - Sim\n [2] - Não")
+
+                self.carregar_pedidos(idcliente)
+
+                print("\n[1] - Sim\n[2] - Não\n")
                 comprarDeNovo = int(input("Deseja comprar mais itens ? "))
                 if comprarDeNovo == 2:
                     print("Sem problemas! Retornando ao início...")
