@@ -31,22 +31,36 @@ class Compras(ConectarBanco):
     def carregar_pedidos(self, idcliente):
         self.cliente = idcliente
         cursor = self.conn.cursor()
-        cursor.execute("INSERT INTO pedidos (cliente_idCliente, item_idItem, pagamento_idPagamento) VALUES (%s, 1, 4);", (idcliente,))
+
+        # Buscando os IDs de itens para poder adiciona-los em 'pedidos' depois
+        #ORDER BY utilizado para listar em ordem crescente e não causar problemas de pedidos sem clientes
+        cursor.execute("SELECT idItens FROM itenspedidos ORDER BY idItens")
+        itens = cursor.fetchall()
+        for iditem in itens:
+            pass
+        cursor.execute("INSERT INTO pedidos (cliente_idCliente, item_idItem, pagamento_idPagamento) VALUES (%s, %s, 4);", (idcliente, iditem[0], ))
         self.conn.commit()
+
         cursor.execute("SELECT cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
         "FROM itenspedidos it " \
-        "LEFT JOIN pedidos p ON p.item_idItem = it.idItens " \
-        "LEFT JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
-        "LEFT JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
-        "LEFT JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria;")
+        "INNER JOIN pedidos p ON p.item_idItem = it.idItens " \
+        "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+        "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
+        "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria;")
+
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
+    def pagamento(self, valorTotal):
+        self.valorTotal = valorTotal
+        print("Valor total: ", self.valorTotal)
+        
     # Função de adicionar produtos ao 'itenspedidos'
     def adicionar_ao_carrinho(self, idcliente):
         print("\n")
         while True:
+
             valorTotal = 0.0
 
             try:
@@ -81,7 +95,7 @@ class Compras(ConectarBanco):
                 print("\n[1] - Sim\n[2] - Não\n")
                 comprarDeNovo = int(input("Deseja comprar mais itens ? "))
                 if comprarDeNovo == 2:
-                    print("Sem problemas! Retornando ao início...")
+                    self.pagamento(valorTotal)
                     time.sleep(1)
                     break
                 elif comprarDeNovo == 1:
