@@ -35,8 +35,8 @@ class Compras(ConectarBanco):
         # Buscando os IDs de itens para poder adiciona-los em 'pedidos' depois
         #ORDER BY utilizado para listar em ordem crescente e não causar problemas de pedidos sem clientes
         cursor.execute("SELECT idItens FROM itenspedidos ORDER BY idItens")
-        itens = cursor.fetchall()
-        for iditem in itens:
+        self.rows = cursor.fetchall()
+        for iditem in self.rows:
             pass
         cursor.execute("INSERT INTO pedidos (cliente_idCliente, item_idItem, pagamento_idPagamento) VALUES (%s, %s, 4);", (idcliente, iditem[0], ))
         self.conn.commit()
@@ -46,15 +46,54 @@ class Compras(ConectarBanco):
         "INNER JOIN pedidos p ON p.item_idItem = it.idItens " \
         "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
         "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
-        "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria;")
+        "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s;", (idcliente,))
 
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
-    def pagamento(self, valorTotal):
-        self.valorTotal = valorTotal
-        print("Valor total: ", self.valorTotal)
+    # Função de pagamento das compras
+    def pagamento(self, idcliente):
+        self.idcliente = idcliente
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT cl.idCliente, cl.nome, SUM(it.valorTotal) AS totalComprado FROM pedidos p " \
+        "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+        "INNER JOIN itenspedidos it ON p.item_idItem = it.idItens " \
+        "WHERE cl.idCliente = %s;", (idcliente,))
+        self.columms = [desc[0] for desc in cursor.description]
+        self.rows = cursor.fetchall()
+
+        for id, nome, total in self.rows:
+            pass
+        
+        time.sleep(0.5)
+        print("=" *50)
+        print("Detalhes do pedido: \n")
+        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+        while True:
+            try:
+                print("\n[1] - Dinheiro\n[2] - Pix\n[3] - Cartão\n")
+                forma_pagamento = int(input("Selecione a forma de pagamento: "))
+            except ValueError:
+                print("Por favor, digite um valor válido!")
+
+            if forma_pagamento == 1:
+                print("Pagando em dinheiro...")
+                time.sleep(0.8)
+                print(f"R$ {total:.2f} pago com sucesso!")
+                break
+            elif forma_pagamento == 2:
+                print("Pagando em pix...")
+                time.sleep(0.8)
+                print(f"R$ {total:.2f} pago com sucesso!")
+                break
+            elif forma_pagamento == 3:
+                print("Em breve...")
+                break
+            else:
+                print("Por favor, selecione [1] para dinheiro ou [2] para pix ou [3] para métodos de cartão")
+                continue
+
         
     # Função de adicionar produtos ao 'itenspedidos'
     def adicionar_ao_carrinho(self, idcliente):
@@ -95,7 +134,7 @@ class Compras(ConectarBanco):
                 print("\n[1] - Sim\n[2] - Não\n")
                 comprarDeNovo = int(input("Deseja comprar mais itens ? "))
                 if comprarDeNovo == 2:
-                    self.pagamento(valorTotal)
+                    self.pagamento(idcliente)
                     time.sleep(1)
                     break
                 elif comprarDeNovo == 1:
