@@ -88,13 +88,87 @@ class Compras(ConectarBanco):
                 print(f"R$ {total:.2f} pago com sucesso!")
                 break
             elif forma_pagamento == 3:
-                print("Em breve...")
+                self.pagar_em_cartao(total)
                 break
             else:
                 print("Por favor, selecione [1] para dinheiro ou [2] para pix ou [3] para métodos de cartão")
                 continue
+    
+    # Função de controle de pagamento em cartão das compras
+    def pagar_em_cartao(self, total):
+        self.total = total
+        try:
+            print("\n[1] - Débito\n[2] - Crédito\n")
+            metodo = int(input("Escolha um dos métodos de pagamento: "))
+        except ValueError:
+            print("Por favor, digite um valor válido!")
 
-        
+        if metodo == 1:
+            print("Pagando com cartão no débito...")
+            time.sleep(0.8)
+            print(f"R$ {total:.2f} pago com sucesso!")
+        elif metodo == 2:
+            print("\nNúmero de parcelas gerados: \n")
+            parcelas = []
+            if total < 10:
+                for i in range(1, 3):
+                    n = i
+                    m = total / n
+                    info_parcelas = (n, m)
+                    parcelas.append(info_parcelas)
+                
+                for (n, m) in parcelas:
+                    print(f"{n} X R${m:.2f}")
+
+                print("\n")
+
+            elif 10 <= total < 30:
+                for i in range(1, 6):
+                    n = i
+                    m = total / n
+                    info_parcelas = (n, m)
+                    parcelas.append(info_parcelas)
+                
+                for (n, m) in parcelas:
+                    print(f"{n} X R${m:.2f}")
+
+                print("\n")
+            
+            elif 30 <= total < 80:
+                for i in range(1, 9):
+                    n = i
+                    m = total / n
+                    info_parcelas = (n, m)
+                    parcelas.append(info_parcelas)
+                
+                for (n, m) in parcelas:
+                    print(f"{n} X R${m:.2f}")
+
+                print("\n")
+
+            elif total >= 80:
+                for i in range(1, 13):
+                    n = i
+                    m = total / n
+                    info_parcelas = (n, m)
+                    parcelas.append(info_parcelas)
+                
+                for (n, m) in parcelas:
+                    print(f"{n} X R${m:.2f}")
+
+                print("\n")
+            
+            escolha = int(input("Escolha o número de parcelas a ser pago: "))
+            for (n, m) in parcelas:
+                if escolha == n and escolha != 1:
+                    print(f"Pagando {n} parcelas de R${m:.2f} ...")
+                    time.sleep(0.5)
+                    break
+                elif escolha == 1:
+                    print(f"Pagando R${m:.2f} à vista no cartão...")
+                    time.sleep(0.5)
+                    break
+
     # Função de adicionar produtos ao 'itenspedidos'
     def adicionar_ao_carrinho(self, idcliente):
         print("\n")
