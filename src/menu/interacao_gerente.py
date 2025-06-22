@@ -80,7 +80,7 @@ class Gerente(ConectarBanco):
 
     # Função de atualização dos dados de um cliente
     def atualizar_cliente(self):
-        time.sleep(1)
+        time.sleep(0.7)
         print("\n[1] - Alterar somente nome do cliente\n[2] - Alterar somente idade do cliente\n[3] - Alterar todos os dados do cliente\n")
         escolha = int(input("Escolha uma das opções acima: "))
         if escolha == 1:
@@ -117,14 +117,14 @@ class Gerente(ConectarBanco):
                     break
 
         elif escolha == 2:
-            time.sleep(1)
+            time.sleep(0.7)
             cursor = self.conn.cursor()
             cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
             self.columms = [desc[0] for desc in cursor.description]
             self.rows = cursor.fetchall()
             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
             print("\n")
-            time.sleep(1)
+            time.sleep(0.7)
             while True:
                 try:
                     idCliente = int(input("Escolha na lista de clientes qual idade você quer alterar pelo ID: "))
@@ -149,14 +149,14 @@ class Gerente(ConectarBanco):
                     break
 
         elif escolha == 3:
-            time.sleep(1)
+            time.sleep(0.7)
             cursor = self.conn.cursor()
             cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
             self.columms = [desc[0] for desc in cursor.description]
             self.rows = cursor.fetchall()
             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
             print("\n")
-            time.sleep(1)
+            time.sleep(0.7)
             while True:
                 try:
                     idCliente = int(input("Escolha na lista de clientes qual nome e idade você quer alterar pelo ID: "))
@@ -184,14 +184,14 @@ class Gerente(ConectarBanco):
     
     # Função de deletar um cliente
     def deletar_cliente(self):
-        time.sleep(1)
+        time.sleep(0.7)
         print("\n")
         cursor = self.conn.cursor()
         cursor.execute("SELECT idCliente, nome FROM clientes;")
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-        time.sleep(1)
+        time.sleep(0.7)
         while True:
             print("\n")
             try:

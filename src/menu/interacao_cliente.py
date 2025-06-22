@@ -34,7 +34,7 @@ class Cliente(ConectarBanco):
             if registrar_sistema == 2:
                 print("=" *50)
                 print("Sem problemas! Retornando ao início...")
-                time.sleep(1)
+                time.sleep(0.7)
                 return True
             elif registrar_sistema == 1:
                 print("=" *50)
@@ -43,7 +43,7 @@ class Cliente(ConectarBanco):
                 cursor = self.conn.cursor()
                 cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s)", (nome, idade,))
                 self.conn.commit()
-                time.sleep(1)
+                time.sleep(0.7)
                 print(f"Cliente {nome} adicionado com sucesso!")
                 return True
             else:
@@ -63,11 +63,11 @@ class Cliente(ConectarBanco):
                 cursor = self.conn.cursor()
                 cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s)", (nome, idade,))
                 self.conn.commit()
-                time.sleep(1)
+                time.sleep(0.7)
                 print(f"Cliente {nome} adicionado com sucesso!")
                 return True
             else:
-                time.sleep(1)
+                time.sleep(0.7)
                 print("=" *50)
                 print("Por favor, digite [1] para se registrar ou [2] para escolher seu usuário")
                 print("\n")
@@ -80,7 +80,7 @@ class Cliente(ConectarBanco):
     # Utilizando o loop for para iterar por todos os IDs do banco até achar por aquele que é igual à escolha do usuário
     def escolher_cliente(self):
         while True:
-            time.sleep(1)
+            time.sleep(0.7)
             print("\n")
             self.carregar_clientes(self.bd_config)
             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))

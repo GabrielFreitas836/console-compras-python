@@ -36,7 +36,7 @@ class Menu:
                 time.sleep(0.2)
                 print("Carregando lista de clientes...")
                 self.cliente.carregar_clientes(bd_config)
-                time.sleep(1)
+                time.sleep(0.7)
                 if self.cliente.rows == []:
                     print("=" *50)
                     print("\n [1] - sim\n [2] - não\n")
@@ -56,7 +56,7 @@ class Menu:
                             break
                 else:
                     print(tabulate(self.cliente.rows, headers=self.cliente.columms, tablefmt="grid"))
-                    time.sleep(1)    
+                    time.sleep(0.7)    
                     print("\n [1] - sim\n [2] - não\n")
                     continuarRegistro = self.cliente.registrar_cliente()
                     if not continuarRegistro:
@@ -78,5 +78,5 @@ class Menu:
                 print("Por favor, digite [1] se for cliente ou [2] se for gerente")
                 time.sleep(0.8)
                 print("Retornando ao início...")
-                time.sleep(1.2)
+                time.sleep(1)
                 continue        
