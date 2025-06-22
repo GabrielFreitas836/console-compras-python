@@ -18,7 +18,7 @@ class Gerente(ConectarBanco):
     # Função principal que gerencia as opções do gerente
     def opcoes_gerente(self):
         while True:
-            print("\n[1] - Clientes\n[2] - Produtos\n")
+            print("\n[1] - Clientes\n[2] - Produtos\n[3] - Itens e Pedidos\n")
             escolha = int(input("Em qual categoria gostaria de mexer ? "))
 
             match escolha:
@@ -62,6 +62,27 @@ class Gerente(ConectarBanco):
                     print("=" *50)
                     print("\n[1] - Adicionar um novo produto\n[2] - Alterar dados de um produto existente\n[3] - Deletar um produto existente\n")
                     print("=" *50)
+                case 3:
+                    print("Abrindo aba de pedidos...")
+                    time.sleep(1)
+                    print("=" *50)
+                    print("\n[1] - Mostrar tabela de pedidos\n")
+                    subescolha = int(input("O que você gostaria de fazer ? "))
+                    print("=" *50)
+
+                    if subescolha == 1:
+                        time.sleep(1)
+                        print("\n")
+                        cursor = self.conn.cursor()
+                        cursor.execute("SELECT p.idPedido, cl.nome AS cliente, it.quantidade, pr.descricao AS produto, pr.valorUnitario, it.valorTotal, pa.descricao AS formaPagamento FROM pedidos p INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+                        "INNER JOIN itenspedidos it ON p.item_idItem = it.idItens " \
+                        "INNER JOIN produtos pr ON it.produto_idProduto = pr.idProduto " \
+                        "INNER JOIN pagamento pa ON p.pagamento_idPagamento = pa.idPagamento ORDER BY p.idPedido;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        break
+
                 case _:
                     print("=" *50)
                     print("\n")
