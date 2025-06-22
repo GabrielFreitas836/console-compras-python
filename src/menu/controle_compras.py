@@ -81,14 +81,17 @@ class Compras(ConectarBanco):
                 print("Pagando em dinheiro...")
                 time.sleep(0.8)
                 print(f"R$ {total:.2f} pago com sucesso!")
+                self.atualizar_pagamento(forma_pagamento, idcliente)
                 break
             elif forma_pagamento == 2:
                 print("Pagando em pix...")
                 time.sleep(0.8)
                 print(f"R$ {total:.2f} pago com sucesso!")
+                self.atualizar_pagamento(forma_pagamento, idcliente)
                 break
             elif forma_pagamento == 3:
                 self.pagar_em_cartao(total)
+                self.atualizar_pagamento(forma_pagamento, idcliente)
                 break
             else:
                 print("Por favor, selecione [1] para dinheiro ou [2] para pix ou [3] para métodos de cartão")
@@ -168,6 +171,14 @@ class Compras(ConectarBanco):
                     print(f"Pagando R${m:.2f} à vista no cartão...")
                     time.sleep(0.5)
                     break
+    
+    # Função de atualizar a coluna de pagamento da tabela 'pedidos'
+    def atualizar_pagamento(self, idpagamento, idcliente):
+        self.idpagamento = idpagamento
+        self.idcliente = idcliente
+        cursor = self.conn.cursor()
+        cursor.execute("UPDATE pedidos SET pagamento_idPagamento = %s WHERE cliente_idCliente = %s", (idpagamento, idcliente,))
+        self.conn.commit()
 
     # Função de adicionar produtos ao 'itenspedidos'
     def adicionar_ao_carrinho(self, idcliente):
