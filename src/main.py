@@ -30,3 +30,4 @@ if __name__ == "__main__":
         print("Erro de Interface do MySQL: ", error)
     except Exception as error:
         print("Outro tipo de erro: ", error)
+        
