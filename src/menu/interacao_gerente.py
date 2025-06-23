@@ -90,7 +90,7 @@ class Gerente(ConectarBanco):
                 case _:
                     print("=" *50)
                     print("\n")
-                    print("Escolha 1 ou 2")
+                    print("Escolha uma das opções disponíveis: ")
                     continue
 
     # Função de adicionar um novo cliente
