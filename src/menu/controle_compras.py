@@ -190,37 +190,37 @@ class Compras(ConectarBanco):
             try:
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
+
+                cursor = self.conn.cursor()
+                cursor.execute("SELECT idProduto, valorUnitario FROM produtos;")
+                self.rows = cursor.fetchall()
+                
+                for id, valor in self.rows:
+                    if id == escolhaProduto:
+                        valorTotal = valor * quantidadeProduto
+                        escolhaProduto = id
+                        break
+                
+                if escolhaProduto != id:
+                    print("ID Inválido! Tente novamente!")
+                    time.sleep(1)
+                    continue
+                else:
+                    cursor.execute("INSERT INTO itenspedidos (quantidade, produto_idProduto, valorTotal) VALUES (%s, %s, %s)", (quantidadeProduto, escolhaProduto, valorTotal,))
+                    self.conn.commit()
+                    print("Item salvo com sucesso!")
+                    time.sleep(0.3)
+                    print("=" *50)
+
+                    self.carregar_pedidos(idcliente)
+
+                    print("\n[1] - Sim\n[2] - Não\n")
+                    comprarDeNovo = int(input("Deseja comprar mais itens ? "))
+                    if comprarDeNovo == 2:
+                        self.pagamento(idcliente)
+                        time.sleep(1)
+                        break
+                    elif comprarDeNovo == 1:
+                        continue
             except ValueError:
                 print("Por favor, digite um valor válido")
-
-            cursor = self.conn.cursor()
-            cursor.execute("SELECT idProduto, valorUnitario FROM produtos;")
-            self.rows = cursor.fetchall()
-            
-            for id, valor in self.rows:
-                if id == escolhaProduto:
-                    valorTotal = valor * quantidadeProduto
-                    escolhaProduto = id
-                    break
-            
-            if escolhaProduto != id:
-                print("ID Inválido! Tente novamente!")
-                time.sleep(1)
-                continue
-            else:
-                cursor.execute("INSERT INTO itenspedidos (quantidade, produto_idProduto, valorTotal) VALUES (%s, %s, %s)", (quantidadeProduto, escolhaProduto, valorTotal,))
-                self.conn.commit()
-                print("Item salvo com sucesso!")
-                time.sleep(0.3)
-                print("=" *50)
-
-                self.carregar_pedidos(idcliente)
-
-                print("\n[1] - Sim\n[2] - Não\n")
-                comprarDeNovo = int(input("Deseja comprar mais itens ? "))
-                if comprarDeNovo == 2:
-                    self.pagamento(idcliente)
-                    time.sleep(1)
-                    break
-                elif comprarDeNovo == 1:
-                    continue
