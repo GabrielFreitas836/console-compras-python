@@ -33,7 +33,7 @@ class Compras(ConectarBanco):
         cursor = self.conn.cursor()
 
         # Buscando os IDs de itens para poder adiciona-los em 'pedidos' depois
-        #ORDER BY utilizado para listar em ordem crescente e não causar problemas de pedidos sem clientes
+        # ORDER BY utilizado para listar em ordem crescente e não causar problemas de pedidos sem clientes
         cursor.execute("SELECT idItens FROM itenspedidos ORDER BY idItens")
         self.rows = cursor.fetchall()
         for iditem in self.rows:
@@ -41,7 +41,7 @@ class Compras(ConectarBanco):
         cursor.execute("INSERT INTO pedidos (cliente_idCliente, item_idItem, pagamento_idPagamento) VALUES (%s, %s, 4);", (idcliente, iditem[0], ))
         self.conn.commit()
 
-        cursor.execute("SELECT cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
+        cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
         "FROM itenspedidos it " \
         "INNER JOIN pedidos p ON p.item_idItem = it.idItens " \
         "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
@@ -196,7 +196,7 @@ class Compras(ConectarBanco):
         while True:
 
             valorTotal = 0.0
-            
+
             try:
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
