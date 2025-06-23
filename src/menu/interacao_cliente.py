@@ -44,7 +44,7 @@ class Cliente(ConectarBanco):
                 cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s)", (nome, idade,))
                 self.conn.commit()
                 time.sleep(0.7)
-                print(f"Cliente {nome} adicionado com sucesso!")
+                print(f"Cliente {nome} adicionado(a) com sucesso!")
                 return True
             else:
                 print("=" *50)
@@ -64,7 +64,7 @@ class Cliente(ConectarBanco):
                 cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s)", (nome, idade,))
                 self.conn.commit()
                 time.sleep(0.7)
-                print(f"Cliente {nome} adicionado com sucesso!")
+                print(f"Cliente {nome} adicionado(a) com sucesso!")
                 return True
             else:
                 time.sleep(0.7)
