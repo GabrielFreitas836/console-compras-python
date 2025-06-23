@@ -181,6 +181,7 @@ class Compras(ConectarBanco):
                     continue
             except ValueError:
                 print("Por favor, digite um valor válido!")
+
     # Função de atualizar a coluna de pagamento da tabela 'pedidos'
     def atualizar_pagamento(self, idpagamento, idcliente):
         self.idpagamento = idpagamento
@@ -195,7 +196,7 @@ class Compras(ConectarBanco):
         while True:
 
             valorTotal = 0.0
-
+            
             try:
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
