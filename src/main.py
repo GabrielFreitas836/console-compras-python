@@ -5,7 +5,7 @@
     descrição: arquivo principal para execução do programa
 """
 
-# Importando a classe de conectar_banco.py
+# Importando a classe interacao_principal.py
 from menu.interacao_principal import Menu
 import mysql.connector
 from dotenv import load_dotenv
