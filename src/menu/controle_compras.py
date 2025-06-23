@@ -74,28 +74,30 @@ class Compras(ConectarBanco):
             try:
                 print("\n[1] - Dinheiro\n[2] - Pix\n[3] - Cartão\n")
                 forma_pagamento = int(input("Selecione a forma de pagamento: "))
+
+                if forma_pagamento == 1:
+                    print("Pagando em dinheiro...")
+                    time.sleep(0.8)
+                    print(f"R$ {total:.2f} pago com sucesso!")
+                    self.atualizar_pagamento(forma_pagamento, idcliente)
+                    break
+                elif forma_pagamento == 2:
+                    print("Pagando em pix...")
+                    time.sleep(0.8)
+                    print(f"R$ {total:.2f} pago com sucesso!")
+                    self.atualizar_pagamento(forma_pagamento, idcliente)
+                    break
+                elif forma_pagamento == 3:
+                    self.pagar_em_cartao(total)
+                    self.atualizar_pagamento(forma_pagamento, idcliente)
+                    break
+                else:
+                    print("Por favor, selecione [1] para dinheiro ou [2] para pix ou [3] para métodos de cartão")
+                    continue
             except ValueError:
                 print("Por favor, digite um valor válido!")
 
-            if forma_pagamento == 1:
-                print("Pagando em dinheiro...")
-                time.sleep(0.8)
-                print(f"R$ {total:.2f} pago com sucesso!")
-                self.atualizar_pagamento(forma_pagamento, idcliente)
-                break
-            elif forma_pagamento == 2:
-                print("Pagando em pix...")
-                time.sleep(0.8)
-                print(f"R$ {total:.2f} pago com sucesso!")
-                self.atualizar_pagamento(forma_pagamento, idcliente)
-                break
-            elif forma_pagamento == 3:
-                self.pagar_em_cartao(total)
-                self.atualizar_pagamento(forma_pagamento, idcliente)
-                break
-            else:
-                print("Por favor, selecione [1] para dinheiro ou [2] para pix ou [3] para métodos de cartão")
-                continue
+            
     
     # Função de controle de pagamento em cartão das compras
     def pagar_em_cartao(self, total):
