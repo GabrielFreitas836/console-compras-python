@@ -1,2 +1,0 @@
-    - Bloquear as opções de deletar e alterar dados de cliente se a tabela clientes estiver vazia;
-    - Caso o usuário seja cliente, a tabela de clientes esteja vazia e o usuário seleciona em não se registrar no sistema, o loop deve voltar ao início(V);
