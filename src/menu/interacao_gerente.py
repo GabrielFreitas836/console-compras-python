@@ -82,6 +82,10 @@ class Gerente(ConectarBanco):
                         self.rows = cursor.fetchall()
                         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
                         break
+                    else:
+                        print("Opção inválida! Retornando ao início...")
+                        time.sleep(0.5)
+                        continue
 
                 case _:
                     print("=" *50)
