@@ -60,8 +60,36 @@ class Gerente(ConectarBanco):
                     print("Abrindo aba de produtos...")
                     time.sleep(1)
                     print("=" *50)
-                    print("\n[1] - Adicionar um novo produto\n[2] - Alterar dados de um produto existente\n[3] - Deletar um produto existente\n")
+                    print("\n[1] - Adicionar um novo produto\n[2] - Alterar dados de um produto existente\n[3] - Deletar um produto existente\n[4] - Mostrar tabela de produtos\n[5] - Limpar tabela de produtos\n")
+                    subescolha = int(input("O que você gostaria de fazer ? "))
                     print("=" *50)
+
+                    if subescolha == 1:
+                        self.adicionar_produto()
+                        break
+                    elif subescolha == 2:
+                        print("Alterando produtos")
+                        break
+                    elif subescolha == 3:
+                        self.deletar_produto()
+                        break
+                    elif subescolha == 4:
+                        time.sleep(1)
+                        print("\n")
+                        cursor = self.conn.cursor()
+                        cursor.execute("SELECT p.idProduto, p.descricao AS produto, p.valorUnitario, c.descricao AS categoria " \
+                        "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        break
+                    elif subescolha == 5:
+                        self.limpar_produtos()
+                        break
+                    else:
+                        print("Opção inválida! Retornando ao início...")
+                        time.sleep(0.5)
+                        continue
                 case 3:
                     print("Abrindo aba de pedidos...")
                     time.sleep(1)
@@ -95,13 +123,39 @@ class Gerente(ConectarBanco):
 
     # Função de adicionar um novo cliente
     def adicionar_cliente(self):
-        nome = input("Digite o nome do cliente: ")
-        idade = int(input("Digite a idade do cliente: "))
-        cursor = self.conn.cursor()
-        cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s);", (nome, idade,))
-        self.conn.commit()
-        time.sleep(1)
-        print(f"Cliente {nome} adicionado com sucesso!")
+        try:
+            nome = input("Digite o nome do cliente: ")
+            idade = int(input("Digite a idade do cliente: "))
+            cursor = self.conn.cursor()
+            cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s);", (nome, idade,))
+            self.conn.commit()
+            time.sleep(1)
+            print(f"Cliente {nome} adicionado(a) com sucesso!")
+        except ValueError:
+            print("Por favor, digite um valor válido!")
+            
+
+    # Função de adicionar um novo produto
+    def adicionar_produto(self):
+        try:
+            produto = input("Qual será o produto ? ").upper()
+            valorUnitario = float(input("Qual será o valor unitário do produto ? "))
+            
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT idCategoria, descricao FROM categorias;")
+            self.columms = [desc[0] for desc in cursor.description]
+            self.rows = cursor.fetchall()
+            print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+            print("\n")
+
+            categoria = int(input("Escolha a categoria do produto a partir de seu ID: "))
+            cursor.execute("INSERT INTO produtos (descricao, valorUnitario, categoria_idCategoria) VALUES (%s, %s, %s)", (produto, valorUnitario, categoria,))
+            self.conn.commit()
+            time.sleep(1)
+            print("Produto adicionado com sucesso")
+        except ValueError:
+            print("Por favor, digite um valor válido!")
+
 
     # Função de atualização dos dados de um cliente
     def atualizar_cliente(self):
@@ -221,24 +275,59 @@ class Gerente(ConectarBanco):
             print("\n")
             try:
                 clienteDeletado = int(input("Escolha na lista de clientes quem você quer deletar pelo ID: "))
-            except ValueError:
-                print("Por favor, digite um número válido!")
-                continue
 
-            for id, nome in self.rows:
-                if clienteDeletado == id:
+                for id, nome in self.rows:
+                    if clienteDeletado == id:
                         cursor.execute("DELETE FROM clientes WHERE idCliente = %s;", (clienteDeletado,))
                         self.conn.commit()
                         id = clienteDeletado
-                        print(f"Cliente {nome} deletado com sucesso")
+                        print(f"Cliente {nome} deletado com sucesso!")
+                        cursor.execute("ALTER TABLE clientes AUTO_INCREMENT = %s;", (clienteDeletado,))
                         break
 
-            if id != clienteDeletado:
-                print("Cliente não encontrado! Tente novamente!")
+                if id != clienteDeletado:
+                    print("Cliente não encontrado! Tente novamente!")
+                    continue
+                else:
+                    break
+            except ValueError:
+                print("Por favor, digite um número válido!")
                 continue
-            else:
-                break
     
+    # Função de deletar um produto
+    def deletar_produto(self):
+        time.sleep(0.7)
+        print("\n")
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT p.idProduto, p.descricao AS produto, p.valorUnitario, c.descricao AS categoria " \
+        "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria;")
+        self.columms = [desc[0] for desc in cursor.description]
+        self.rows = cursor.fetchall()
+        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+        time.sleep(0.7)
+        while True:
+            print("\n")
+            try:
+                produtoDeletado = int(input("Escolha na lista de produtos qual você quer deletar pelo ID: "))
+
+                for id, produto, valoUnitario, categoria in self.rows:
+                    if produtoDeletado == id:
+                        cursor.execute("DELETE FROM produtos WHERE idProduto = %s;", (produtoDeletado,))
+                        self.conn.commit()
+                        id = produtoDeletado
+                        print("Produto deletado com sucesso!")
+                        cursor.execute("ALTER TABLE produtos AUTO_INCREMENT = %s;", (produtoDeletado,))
+                        self.conn.commit()
+                        break
+                
+                if id != produtoDeletado:
+                    print("Produto não encontrado! Tente novamente!")
+                    continue
+                else:
+                    break
+            except ValueError:
+                print("Por favor, digite um número válido!")
+
     # Função de limpeza total da tabela clientes
     def limpar_clientes(self):
         time.sleep(1)
@@ -250,9 +339,27 @@ class Gerente(ConectarBanco):
         time.sleep(1.3)
         cursor.execute("TRUNCATE TABLE clientes;")
         print("Tabela clientes limpa com sucesso!")
-        time.sleep(0.3)
+        time.sleep(0.5)
         print("Reativando restrições de chaves estrangeiras...")
         time.sleep(0.8)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
+
+    # Função de limpeza total da tabela produtos
+    def limpar_produtos(self):
+        time.sleep(1)
+        cursor = self.conn.cursor()
+        print("Desativando restrições de chaves estrangeiras temporariamente...")
+        time.sleep(1.3)
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
+        print("Limpando a tabela produtos...")
+        time.sleep(1.3)
+        cursor.execute("TRUNCATE TABLE produtos;")
+        print("Tabela produtos limpa com sucesso!")
+        time.sleeo(0.5)
+        print("Reativando restrições de chaves estrangeiras...")
+        time.sleep(0.8)
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+        self.conn.commit()
+
                     
