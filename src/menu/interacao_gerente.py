@@ -68,7 +68,7 @@ class Gerente(ConectarBanco):
                         self.adicionar_produto()
                         break
                     elif subescolha == 2:
-                        print("Alterando produtos")
+                        self.atualizar_produtos()
                         break
                     elif subescolha == 3:
                         self.deletar_produto()
@@ -163,15 +163,14 @@ class Gerente(ConectarBanco):
         print("\n[1] - Alterar somente nome do cliente\n[2] - Alterar somente idade do cliente\n[3] - Alterar todos os dados do cliente\n")
         escolha = int(input("Escolha uma das opções acima: "))
         if escolha == 1:
-            time.sleep(1)
-            print("=" *50)
+            time.sleep(0.7)
             cursor = self.conn.cursor()
             cursor.execute("SELECT idCliente, nome FROM clientes;")
             self.columms = [desc[0] for desc in cursor.description]
             self.rows = cursor.fetchall()
             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
             print("\n")
-            time.sleep(1)
+            time.sleep(0.7)
             while True:
                 try:
                     idCliente = int(input("Escolha na lista de clientes qual nome você quer alterar pelo ID: "))
@@ -261,6 +260,129 @@ class Gerente(ConectarBanco):
                 else:
                     break
     
+    # Função de atualização dos dados de um produto
+    def atualizar_produtos(self):
+        time.sleep(0.7)
+        print("\n[1] - Alterar somente descrição do produto\n[2] - Alterar somente o valor unitário do produto\n[3] - Alterar somente a categoria do produto\n[4] - Alterar todos os dados do produto")
+        escolha = int(input("Escolha uma das opções acima: "))
+        try:
+            while True:
+                if escolha == 1:
+                    time.sleep(0.7)
+                    cursor = self.conn.cursor()
+                    cursor.execute("SELECT idProduto, descricao FROM produtos;")
+                    self.columms = [desc[0] for desc in cursor.description]
+                    self.rows = cursor.fetchall()
+                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                    time.sleep(0.7)
+                    print("\n")
+
+                    idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
+                    novaDescricao = input("Digite a nova descrição do produto: ").upper()
+
+                    for id, produto in self.rows:
+                        if idProduto == id:
+                            cursor.execute("UPDATE produtos SET descricao = %s WHERE idProduto = %s;", (novaDescricao, idProduto,))
+                            self.conn.commit()
+                            id = idProduto
+                            print("Produto alterado com sucesso!")
+                            break
+                        
+                    if id != idProduto:
+                        print("Produto não encontrado! Tente novamente!")
+                        continue
+                    else:
+                        break
+
+                elif escolha == 2:
+                    time.sleep(0.7)
+                    cursor = self.conn.cursor()
+                    cursor.execute("SELECT idProduto, descricao, valorUnitario FROM produtos;")
+                    self.columms = [desc[0] for desc in cursor.description]
+                    self.rows = cursor.fetchall()
+                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                    time.sleep(0.7)
+                    print("\n")
+
+                    idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
+                    novoValor = float(input("Digite o novo valor unitário do produto: "))
+
+                    for id, produto, valor in self.rows:
+                        if idProduto == id:
+                            cursor.execute("UPDATE produtos SET valorUnitario = %s WHERE idProduto = %s;", (novoValor, idProduto,))
+                            self.conn.commit()
+                            id = idProduto
+                            print("Valor unitário alterado com sucesso!")
+                            break
+
+                    if id != idProduto:
+                        print("Produto não encontrado! Tente novamente!")
+                        continue
+                    else:
+                        break
+
+                elif escolha == 3:
+                    time.sleep(0.7)
+                    cursor = self.conn.cursor()
+                    cursor.execute("SELECT pr.idProduto, pr.descricao AS produto, ca.idCategoria, ca.descricao AS categoria FROM produtos pr INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria ORDER BY pr.idProduto;")
+                    self.columms = [desc[0] for desc in cursor.description]
+                    self.rows = cursor.fetchall()
+                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                    time.sleep(0.7)
+                    print("\n")
+
+                    idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
+                    novaCategoria = int(input("Digite a nova categoria do produto por ID: "))
+
+                    for idproduto, produto, idcategoria, categoria in self.rows:
+                        if idProduto == idproduto:
+                            cursor.execute("UPDATE produtos SET categoria_idCategoria = %s WHERE idProduto = %s;", (novaCategoria, idProduto,))
+                            self.conn.commit()
+                            idproduto = idProduto
+                            print("Categoria alterada com sucesso!")
+                            break
+                        
+                    if idproduto != idProduto:
+                        print("Produto não encontrado! Tente novamente!")
+                        continue
+                    else:
+                        break
+
+                elif escolha == 4:
+                    time.sleep(0.7)
+                    cursor = self.conn.cursor()
+                    cursor.execute("SELECT pr.idProduto, pr.descricao AS produto, pr.valorUnitario, ca.idCategoria, ca.descricao AS categoria FROM produtos pr INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria ORDER BY pr.idProduto;")
+                    self.columms = [desc[0] for desc in cursor.description]
+                    self.rows = cursor.fetchall()
+                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                    time.sleep(0.7)
+                    print("\n")
+
+                    idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
+                    novaDescricao = input("Digite a nova descrição do produto: ").upper()
+                    novoValor = float(input("Digite o novo valor unitário do produto: "))
+                    novaCategoria = int(input("Digite a nova categoria do produto por ID: "))
+
+                    for idproduto, produto, valor, idcategoria, categoria in self.rows:
+                        if idProduto == idproduto:
+                            cursor.execute("UPDATE produtos SET descricao = %s, valorUnitario = %s, categoria_idCategoria = %s WHERE idProduto = %s;", (novaDescricao, novoValor, novaCategoria, idProduto,))
+                            self.conn.commit()
+                            idproduto = idProduto
+                            produto = novaDescricao
+                            valor = novoValor
+                            idcategoria = novaCategoria
+                            print("Todos os dados do produto foram alterados com sucesso!")
+
+                    if idproduto != idProduto and produto != novaDescricao and valor != novoValor and idcategoria != novaCategoria:
+                        print("Produto não encontrado! Tente novamente!")
+                        continue
+                    else:
+                        break
+                else:
+                    print("Por favor, selecione uma opção válida!")
+        except ValueError:
+            print("Por favor, digite um valor válido!")
+
     # Função de deletar um cliente
     def deletar_cliente(self):
         time.sleep(0.7)
