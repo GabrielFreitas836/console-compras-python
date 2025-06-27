@@ -7,6 +7,7 @@
 
 from config.conectar_banco import ConectarBanco
 from tabulate import tabulate
+from colorama import Fore, Style # Biblioteca utilizada para colorir textos
 import time
 
 # Função inicializadora da classe + init da classe ConectarBanco
@@ -26,7 +27,12 @@ class Gerente(ConectarBanco):
                     print("Abrindo aba de clientes...")
                     time.sleep(1)
                     print("=" *50)
-                    print("\n[1] - Adicionar um novo cliente\n[2] - Alterar dados de um cliente existente\n[3] - Deletar um cliente existente\n[4] - Mostrar tabela de clientes\n[5] - Limpar tabela de clientes\n")
+                    verificado = self.verificar_tabelas("clientes")
+                    if verificado:
+                        print("\n[1] - Adicionar um novo cliente\n[2] - Alterar dados de um cliente existente\n[3] - Deletar um cliente existente\n[4] - Mostrar tabela de clientes\n[5] - Limpar tabela de clientes\n")
+                    else:
+                        print("\n[1] - Adicionar um novo cliente", Fore.BLACK + "\n[2] - Alterar dados de um cliente existente" + Style.RESET_ALL, Fore.BLACK + "\n[3] - Deletar um cliente existente" + Style.RESET_ALL, "\n[4] - Mostrar tabela de clientes\n[5] - Limpar tabela de clientes\n")
+
                     subescolha = int(input("O que você gostaria de fazer ? "))
                     print("=" *50)
 
@@ -65,7 +71,12 @@ class Gerente(ConectarBanco):
                     print("Abrindo aba de produtos...")
                     time.sleep(1)
                     print("=" *50)
-                    print("\n[1] - Adicionar um novo produto\n[2] - Alterar dados de um produto existente\n[3] - Deletar um produto existente\n[4] - Mostrar tabela de produtos\n[5] - Limpar tabela de produtos\n")
+                    verificado = self.verificar_tabelas("produtos")
+                    if verificado:
+                        print("\n[1] - Adicionar um novo produto\n[2] - Alterar dados de um produto existente\n[3] - Deletar um produto existente\n[4] - Mostrar tabela de produtos\n[5] - Limpar tabela de produtos\n")
+                    else:
+                        print("\n[1] - Adicionar um novo produto", Fore.BLACK + "\n[2] - Alterar dados de um produto existente" + Style.RESET_ALL, Fore.BLACK + "\n[3] - Deletar um produto existente" + Style.RESET_ALL, "\n[4] - Mostrar tabela de produtos\n[5] - Limpar tabela de produtos\n")
+
                     subescolha = int(input("O que você gostaria de fazer ? "))
                     print("=" *50)
 
@@ -135,7 +146,25 @@ class Gerente(ConectarBanco):
                     print("\n")
                     print("Escolha uma das opções disponíveis: ")
                     continue
+    
+    # Função de verificar a existência de valores numa tabela
+    # O nome da tabela deve ser passado como parâmetro e só será aceito os nomes da lista
+    def verificar_tabelas(self, tabela):
+        self.tabela = tabela
+        cursor = self.conn.cursor()
+        # Evitar SQL Injection
+        tabelas_permitidas = ["clientes", "produtos", "pedidos", "itenspedidos"]
+        if tabela in tabelas_permitidas:
+            cursor.execute(f"SELECT * FROM {tabela};")
+            self.rows = cursor.fetchall()
+        else:
+            raise ValueError("Nome de tabela não permitido!")
 
+        if self.rows == []:
+            return False
+        else:
+            return True
+    
     # Função de adicionar um novo cliente
     def adicionar_cliente(self):
         try:
@@ -176,99 +205,104 @@ class Gerente(ConectarBanco):
     def atualizar_cliente(self):
         try:
             while True:
-                time.sleep(0.7)
-                print("\n[1] - Alterar somente nome do cliente\n[2] - Alterar somente idade do cliente\n[3] - Alterar todos os dados do cliente\n")
-                escolha = int(input("Escolha uma das opções acima: "))
-    
-                if escolha == 1:
-                    time.sleep(0.7)
-                    cursor = self.conn.cursor()
-                    cursor.execute("SELECT idCliente, nome FROM clientes;")
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                    print("\n")
-                    time.sleep(0.7)
 
-                    idCliente = int(input("Escolha na lista de clientes qual nome você quer alterar pelo ID: "))
-                    novoNome = input("Escolha um novo nome: ")
+                cursor = self.conn.cursor()
+                cursor.execute("SELECT * FROM clientes;")
+                self.rows = cursor.fetchall()
 
-                    for id, nome in self.rows:
-                        if idCliente == id:
-                            cursor = self.conn.cursor()
-                            cursor.execute("UPDATE clientes SET nome = %s WHERE idCliente = %s;", (novoNome, idCliente, ))
-                            self.conn.commit()
-                            nome = novoNome
-                            print("Cliente teve seu nome alterado com sucesso!")
-                            break
-
-                    if nome != novoNome:
-                        print("Cliente não encontrado! Tente novamente!")
-                        continue
-                    else:
-                        break
-
-                elif escolha == 2:
-                    time.sleep(0.7)
-                    cursor = self.conn.cursor()
-                    cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                    print("\n")
-                    time.sleep(0.7)
-
-                    idCliente = int(input("Escolha na lista de clientes qual idade você quer alterar pelo ID: "))
-                    novaIdade = int(input("Escolha uma nova idade: "))
-
-                    for id, nome, idade in self.rows:
-                        if id == idCliente:
-                            cursor = self.conn.cursor()
-                            cursor.execute("UPDATE clientes SET idade = %s WHERE idCliente = %s;", (novaIdade, idCliente, ))
-                            self.conn.commit()
-                            idade = novaIdade
-                            print("Cliente teve sua idade alterada com sucesso!")
-                            break
-
-                    if idade != novaIdade:
-                        print("Cliente não encontrado! Tente novamente!")
-                        continue
-                    else:
-                        break
-
-                elif escolha == 3:
-                    time.sleep(0.7)
-                    cursor = self.conn.cursor()
-                    cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                    print("\n")
-                    time.sleep(0.7)
-
-                    idCliente = int(input("Escolha na lista de clientes qual nome e idade você quer alterar pelo ID: "))
-                    novoNome = input("Escolha um novo nome: ")
-                    novaIdade = int(input("Escolha uma nova idade: "))
-
-                    for id, nome, idade in self.rows:
-                        if id == idCliente:
-                            cursor = self.conn.cursor()
-                            cursor.execute("UPDATE clientes SET nome = %s, idade = %s WHERE idCliente = %s;", (novoNome, novaIdade, idCliente, ))
-                            self.conn.commit()
-                            nome = novoNome
-                            idade = novaIdade
-                            print("Cliente teve seu nome e idade alterados com sucesso!")
-                            break
-                        
-                    if nome != novoNome and idade != novaIdade:
-                        print("Cliente não encontrado! Tente novamente!")
-                        continue
-                    else:
-                        break
-                
+                if self.rows == []:
+                    print("Opção inválida, pois não há clientes registrados!")
+                    time.sleep(0.4)
+                    print("Adicione um cliente primeiro!")
+                    break
                 else:
-                    print("Por favor, digite uma opção válida!")
-                    continue
+                    time.sleep(0.7)
+                    print("\n[1] - Alterar somente nome do cliente\n[2] - Alterar somente idade do cliente\n[3] - Alterar todos os dados do cliente\n")
+                    escolha = int(input("Escolha uma das opções acima: "))
+        
+                    if escolha == 1:
+                        time.sleep(0.7)
+                        cursor.execute("SELECT idCliente, nome FROM clientes;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        print("\n")
+                        time.sleep(0.7)
+
+                        idCliente = int(input("Escolha na lista de clientes qual nome você quer alterar pelo ID: "))
+                        novoNome = input("Escolha um novo nome: ")
+
+                        for id, nome in self.rows:
+                            if idCliente == id:
+                                cursor.execute("UPDATE clientes SET nome = %s WHERE idCliente = %s;", (novoNome, idCliente, ))
+                                self.conn.commit()
+                                nome = novoNome
+                                print("Cliente teve seu nome alterado com sucesso!")
+                                break
+
+                        if nome != novoNome:
+                            print("Cliente não encontrado! Tente novamente!")
+                            continue
+                        else:
+                            break
+
+                    elif escolha == 2:
+                        time.sleep(0.7)
+                        cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        print("\n")
+                        time.sleep(0.7)
+
+                        idCliente = int(input("Escolha na lista de clientes qual idade você quer alterar pelo ID: "))
+                        novaIdade = int(input("Escolha uma nova idade: "))
+
+                        for id, nome, idade in self.rows:
+                            if id == idCliente:
+                                cursor.execute("UPDATE clientes SET idade = %s WHERE idCliente = %s;", (novaIdade, idCliente, ))
+                                self.conn.commit()
+                                idade = novaIdade
+                                print("Cliente teve sua idade alterada com sucesso!")
+                                break
+
+                        if idade != novaIdade:
+                            print("Cliente não encontrado! Tente novamente!")
+                            continue
+                        else:
+                            break
+
+                    elif escolha == 3:
+                        time.sleep(0.7)
+                        cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        print("\n")
+                        time.sleep(0.7)
+
+                        idCliente = int(input("Escolha na lista de clientes qual nome e idade você quer alterar pelo ID: "))
+                        novoNome = input("Escolha um novo nome: ")
+                        novaIdade = int(input("Escolha uma nova idade: "))
+
+                        for id, nome, idade in self.rows:
+                            if id == idCliente:
+                                cursor.execute("UPDATE clientes SET nome = %s, idade = %s WHERE idCliente = %s;", (novoNome, novaIdade, idCliente, ))
+                                self.conn.commit()
+                                nome = novoNome
+                                idade = novaIdade
+                                print("Cliente teve seu nome e idade alterados com sucesso!")
+                                break
+                            
+                        if nome != novoNome and idade != novaIdade:
+                            print("Cliente não encontrado! Tente novamente!")
+                            continue
+                        else:
+                            break
+                    
+                    else:
+                        print("Por favor, digite uma opção válida!")
+                        continue
         except ValueError:
             print("Por favor, digite um valor válido!")
             self.atualizar_cliente()
@@ -277,193 +311,222 @@ class Gerente(ConectarBanco):
     def atualizar_produtos(self):
         try:
             while True:
-                time.sleep(0.7)
-                print("\n[1] - Alterar somente descrição do produto\n[2] - Alterar somente o valor unitário do produto\n[3] - Alterar somente a categoria do produto\n[4] - Alterar todos os dados do produto")
-                escolha = int(input("Escolha uma das opções acima: "))
-        
-                if escolha == 1:
-                    time.sleep(0.7)
-                    cursor = self.conn.cursor()
-                    cursor.execute("SELECT idProduto, descricao FROM produtos;")
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                    time.sleep(0.7)
-                    print("\n")
 
-                    idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
-                    novaDescricao = input("Digite a nova descrição do produto: ").upper()
+                cursor = self.conn.cursor()
+                cursor.execute("SELECT * FROM produtos;")
+                self.rows = cursor.fetchall()
 
-                    for id, produto in self.rows:
-                        if idProduto == id:
-                            cursor.execute("UPDATE produtos SET descricao = %s WHERE idProduto = %s;", (novaDescricao, idProduto,))
-                            self.conn.commit()
-                            id = idProduto
-                            print("Produto alterado com sucesso!")
-                            break
-                        
-                    if id != idProduto:
-                        print("Produto não encontrado! Tente novamente!")
-                        continue
-                    else:
-                        break
-
-                elif escolha == 2:
-                    time.sleep(0.7)
-                    cursor = self.conn.cursor()
-                    cursor.execute("SELECT idProduto, descricao, valorUnitario FROM produtos;")
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                    time.sleep(0.7)
-                    print("\n")
-
-                    idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
-                    novoValor = float(input("Digite o novo valor unitário do produto: "))
-
-                    for id, produto, valor in self.rows:
-                        if idProduto == id:
-                            cursor.execute("UPDATE produtos SET valorUnitario = %s WHERE idProduto = %s;", (novoValor, idProduto,))
-                            self.conn.commit()
-                            id = idProduto
-                            print("Valor unitário alterado com sucesso!")
-                            break
-
-                    if id != idProduto:
-                        print("Produto não encontrado! Tente novamente!")
-                        continue
-                    else:
-                        break
-
-                elif escolha == 3:
-                    time.sleep(0.7)
-                    cursor = self.conn.cursor()
-                    cursor.execute("SELECT pr.idProduto, pr.descricao AS produto, ca.idCategoria, ca.descricao AS categoria FROM produtos pr INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria ORDER BY pr.idProduto;")
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                    time.sleep(0.7)
-                    print("\n")
-
-                    idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
-                    novaCategoria = int(input("Digite a nova categoria do produto por ID: "))
-
-                    for idproduto, produto, idcategoria, categoria in self.rows:
-                        if idProduto == idproduto:
-                            cursor.execute("UPDATE produtos SET categoria_idCategoria = %s WHERE idProduto = %s;", (novaCategoria, idProduto,))
-                            self.conn.commit()
-                            idproduto = idProduto
-                            print("Categoria alterada com sucesso!")
-                            break
-                        
-                    if idproduto != idProduto:
-                        print("Produto não encontrado! Tente novamente!")
-                        continue
-                    else:
-                        break
-
-                elif escolha == 4:
-                    time.sleep(0.7)
-                    cursor = self.conn.cursor()
-                    cursor.execute("SELECT pr.idProduto, pr.descricao AS produto, pr.valorUnitario, ca.idCategoria, ca.descricao AS categoria FROM produtos pr INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria ORDER BY pr.idProduto;")
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                    time.sleep(0.7)
-                    print("\n")
-
-                    idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
-                    novaDescricao = input("Digite a nova descrição do produto: ").upper()
-                    novoValor = float(input("Digite o novo valor unitário do produto: "))
-                    novaCategoria = int(input("Digite a nova categoria do produto por ID: "))
-
-                    for idproduto, produto, valor, idcategoria, categoria in self.rows:
-                        if idProduto == idproduto:
-                            cursor.execute("UPDATE produtos SET descricao = %s, valorUnitario = %s, categoria_idCategoria = %s WHERE idProduto = %s;", (novaDescricao, novoValor, novaCategoria, idProduto,))
-                            self.conn.commit()
-                            idproduto = idProduto
-                            produto = novaDescricao
-                            valor = novoValor
-                            idcategoria = novaCategoria
-                            print("Todos os dados do produto foram alterados com sucesso!")
-
-                    if idproduto != idProduto and produto != novaDescricao and valor != novoValor and idcategoria != novaCategoria:
-                        print("Produto não encontrado! Tente novamente!")
-                        continue
-                    else:
-                        break
+                if self.rows == []:
+                    print("Opção inválida, pois não há produtos registrados!")
+                    time.sleep(0.4)
+                    print("Adicione um produto primeiro!")
+                    break
                 else:
-                    print("Por favor, selecione uma opção válida!")
-                    continue
+                    time.sleep(0.7)
+                    print("\n[1] - Alterar somente descrição do produto\n[2] - Alterar somente o valor unitário do produto\n[3] - Alterar somente a categoria do produto\n[4] - Alterar todos os dados do produto")
+                    escolha = int(input("Escolha uma das opções acima: "))
+            
+                    if escolha == 1:
+                        time.sleep(0.7)
+                        cursor.execute("SELECT idProduto, descricao FROM produtos;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        time.sleep(0.7)
+                        print("\n")
+
+                        idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
+                        novaDescricao = input("Digite a nova descrição do produto: ").upper()
+
+                        for id, produto in self.rows:
+                            if idProduto == id:
+                                cursor.execute("UPDATE produtos SET descricao = %s WHERE idProduto = %s;", (novaDescricao, idProduto,))
+                                self.conn.commit()
+                                id = idProduto
+                                print("Produto alterado com sucesso!")
+                                break
+                            
+                        if id != idProduto:
+                            print("Produto não encontrado! Tente novamente!")
+                            continue
+                        else:
+                            break
+
+                    elif escolha == 2:
+                        time.sleep(0.7)
+                        cursor.execute("SELECT idProduto, descricao, valorUnitario FROM produtos;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        time.sleep(0.7)
+                        print("\n")
+
+                        idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
+                        novoValor = float(input("Digite o novo valor unitário do produto: "))
+
+                        for id, produto, valor in self.rows:
+                            if idProduto == id:
+                                cursor.execute("UPDATE produtos SET valorUnitario = %s WHERE idProduto = %s;", (novoValor, idProduto,))
+                                self.conn.commit()
+                                id = idProduto
+                                print("Valor unitário alterado com sucesso!")
+                                break
+
+                        if id != idProduto:
+                            print("Produto não encontrado! Tente novamente!")
+                            continue
+                        else:
+                            break
+
+                    elif escolha == 3:
+                        time.sleep(0.7)
+                        cursor.execute("SELECT pr.idProduto, pr.descricao AS produto, ca.idCategoria, ca.descricao AS categoria FROM produtos pr INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria ORDER BY pr.idProduto;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        time.sleep(0.7)
+                        print("\n")
+
+                        idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
+                        novaCategoria = int(input("Digite a nova categoria do produto por ID: "))
+
+                        for idproduto, produto, idcategoria, categoria in self.rows:
+                            if idProduto == idproduto:
+                                cursor.execute("UPDATE produtos SET categoria_idCategoria = %s WHERE idProduto = %s;", (novaCategoria, idProduto,))
+                                self.conn.commit()
+                                idproduto = idProduto
+                                print("Categoria alterada com sucesso!")
+                                break
+                            
+                        if idproduto != idProduto:
+                            print("Produto não encontrado! Tente novamente!")
+                            continue
+                        else:
+                            break
+
+                    elif escolha == 4:
+                        time.sleep(0.7)
+                        cursor.execute("SELECT pr.idProduto, pr.descricao AS produto, pr.valorUnitario, ca.idCategoria, ca.descricao AS categoria FROM produtos pr INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria ORDER BY pr.idProduto;")
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                        time.sleep(0.7)
+                        print("\n")
+
+                        idProduto = int(input("Digite o ID do produto que gostaria de alterar: "))
+                        novaDescricao = input("Digite a nova descrição do produto: ").upper()
+                        novoValor = float(input("Digite o novo valor unitário do produto: "))
+                        novaCategoria = int(input("Digite a nova categoria do produto por ID: "))
+
+                        for idproduto, produto, valor, idcategoria, categoria in self.rows:
+                            if idProduto == idproduto:
+                                cursor.execute("UPDATE produtos SET descricao = %s, valorUnitario = %s, categoria_idCategoria = %s WHERE idProduto = %s;", (novaDescricao, novoValor, novaCategoria, idProduto,))
+                                self.conn.commit()
+                                idproduto = idProduto
+                                produto = novaDescricao
+                                valor = novoValor
+                                idcategoria = novaCategoria
+                                print("Todos os dados do produto foram alterados com sucesso!")
+
+                        if idproduto != idProduto and produto != novaDescricao and valor != novoValor and idcategoria != novaCategoria:
+                            print("Produto não encontrado! Tente novamente!")
+                            continue
+                        else:
+                            break
+                    else:
+                        print("Por favor, selecione uma opção válida!")
+                        continue
         except ValueError:
             print("Por favor, digite um valor válido!")
 
     # Função de deletar um cliente
     def deletar_cliente(self):
-        time.sleep(0.7)
-        print("\n")
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT idCliente, nome FROM clientes;")
-        self.columms = [desc[0] for desc in cursor.description]
-        self.rows = cursor.fetchall()
-        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-        time.sleep(0.7)
         while True:
-            print("\n")
-            try:
-                clienteDeletado = int(input("Escolha na lista de clientes quem você quer deletar pelo ID: "))
 
-                for id, nome in self.rows:
-                    if clienteDeletado == id:
-                        cursor.execute("DELETE FROM clientes WHERE idCliente = %s;", (clienteDeletado,))
-                        self.conn.commit()
-                        id = clienteDeletado
-                        print(f"Cliente {nome} deletado com sucesso!")
-                        cursor.execute("ALTER TABLE clientes AUTO_INCREMENT = %s;", (clienteDeletado,))
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT * FROM clientes;")
+            self.rows = cursor.fetchall()
+
+            if self.rows == []:
+                print("Opção inválida, pois não há clientes registrados!")
+                time.sleep(0.4)
+                print("Adicione um cliente primeiro!")
+                break
+            else:
+                time.sleep(0.7)
+                print("\n")
+                cursor = self.conn.cursor()
+                cursor.execute("SELECT idCliente, nome FROM clientes;")
+                self.columms = [desc[0] for desc in cursor.description]
+                self.rows = cursor.fetchall()
+                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                time.sleep(0.7)
+                print("\n")
+                try:
+                    clienteDeletado = int(input("Escolha na lista de clientes quem você quer deletar pelo ID: "))
+
+                    for id, nome in self.rows:
+                        if clienteDeletado == id:
+                            cursor.execute("DELETE FROM clientes WHERE idCliente = %s;", (clienteDeletado,))
+                            self.conn.commit()
+                            id = clienteDeletado
+                            print(f"Cliente {nome} deletado com sucesso!")
+                            cursor.execute("ALTER TABLE clientes AUTO_INCREMENT = %s;", (clienteDeletado,))
+                            break
+
+                    if id != clienteDeletado:
+                        print("Cliente não encontrado! Tente novamente!")
+                        continue
+                    else:
                         break
-
-                if id != clienteDeletado:
-                    print("Cliente não encontrado! Tente novamente!")
+                except ValueError:
+                    print("Por favor, digite um número válido!")
                     continue
-                else:
-                    break
-            except ValueError:
-                print("Por favor, digite um número válido!")
-                continue
     
     # Função de deletar um produto
     def deletar_produto(self):
-        time.sleep(0.7)
-        print("\n")
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT p.idProduto, p.descricao AS produto, p.valorUnitario, c.descricao AS categoria " \
-        "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria;")
-        self.columms = [desc[0] for desc in cursor.description]
-        self.rows = cursor.fetchall()
-        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-        time.sleep(0.7)
         while True:
-            print("\n")
-            try:
-                produtoDeletado = int(input("Escolha na lista de produtos qual você quer deletar pelo ID: "))
 
-                for id, produto, valoUnitario, categoria in self.rows:
-                    if produtoDeletado == id:
-                        cursor.execute("DELETE FROM produtos WHERE idProduto = %s;", (produtoDeletado,))
-                        self.conn.commit()
-                        id = produtoDeletado
-                        print("Produto deletado com sucesso!")
-                        cursor.execute("ALTER TABLE produtos AUTO_INCREMENT = %s;", (produtoDeletado,))
-                        self.conn.commit()
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT * FROM produtos;")
+            self.rows = cursor.fetchall()
+
+            if self.rows == []:
+                print("Opção inválida, pois não há produtos registrados!")
+                time.sleep(0.4)
+                print("Adicione um produto primeiro!")
+                break
+            else:
+                time.sleep(0.7)
+                print("\n")
+                cursor = self.conn.cursor()
+                cursor.execute("SELECT p.idProduto, p.descricao AS produto, p.valorUnitario, c.descricao AS categoria " \
+                "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria;")
+                self.columms = [desc[0] for desc in cursor.description]
+                self.rows = cursor.fetchall()
+                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                time.sleep(0.7)
+                print("\n")
+                try:
+                    produtoDeletado = int(input("Escolha na lista de produtos qual você quer deletar pelo ID: "))
+
+                    for id, produto, valoUnitario, categoria in self.rows:
+                        if produtoDeletado == id:
+                            cursor.execute("DELETE FROM produtos WHERE idProduto = %s;", (produtoDeletado,))
+                            self.conn.commit()
+                            id = produtoDeletado
+                            print("Produto deletado com sucesso!")
+                            cursor.execute("ALTER TABLE produtos AUTO_INCREMENT = %s;", (produtoDeletado,))
+                            self.conn.commit()
+                            break
+                    
+                    if id != produtoDeletado:
+                        print("Produto não encontrado! Tente novamente!")
+                        continue
+                    else:
                         break
-                
-                if id != produtoDeletado:
-                    print("Produto não encontrado! Tente novamente!")
-                    continue
-                else:
-                    break
-            except ValueError:
-                print("Por favor, digite um número válido!")
+                except ValueError:
+                    print("Por favor, digite um número válido!")
 
     # Função de limpeza total da tabela clientes
     def limpar_clientes(self):
@@ -493,7 +556,7 @@ class Gerente(ConectarBanco):
         time.sleep(1.3)
         cursor.execute("TRUNCATE TABLE produtos;")
         print("Tabela produtos limpa com sucesso!")
-        time.sleeo(0.5)
+        time.sleep(0.5)
         print("Reativando restrições de chaves estrangeiras...")
         time.sleep(0.8)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
