@@ -46,8 +46,13 @@ class Gerente(ConectarBanco):
                         cursor.execute("SELECT idCliente, nome, idade FROM clientes;")
                         self.columms = [desc[0] for desc in cursor.description]
                         self.rows = cursor.fetchall()
-                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                        break
+
+                        if self.rows == []:
+                            print("Não há clientes registrados!")
+                            continue
+                        else:
+                            print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                            break
 
                     elif subescolha == 5:
                         self.limpar_clientes()
@@ -81,8 +86,13 @@ class Gerente(ConectarBanco):
                         "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria;")
                         self.columms = [desc[0] for desc in cursor.description]
                         self.rows = cursor.fetchall()
-                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                        break
+
+                        if self.rows == []:
+                            print("Não há produtos registrados!")
+                            continue
+                        else:
+                            print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                            break
                     elif subescolha == 5:
                         self.limpar_produtos()
                         break
@@ -108,8 +118,13 @@ class Gerente(ConectarBanco):
                         "INNER JOIN pagamento pa ON p.pagamento_idPagamento = pa.idPagamento ORDER BY p.idPedido;")
                         self.columms = [desc[0] for desc in cursor.description]
                         self.rows = cursor.fetchall()
-                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                        break
+
+                        if self.rows == []:
+                            print("Não há pedidos registrados!")
+                            continue
+                        else:
+                            print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                            break
                     else:
                         print("Opção inválida! Retornando ao início...")
                         time.sleep(0.5)
