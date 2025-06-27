@@ -167,38 +167,62 @@ class Gerente(ConectarBanco):
     
     # Função de adicionar um novo cliente
     def adicionar_cliente(self):
-        try:
-            nome = input("Digite o nome do cliente: ")
-            idade = int(input("Digite a idade do cliente: "))
-            cursor = self.conn.cursor()
-            cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s);", (nome, idade,))
-            self.conn.commit()
-            time.sleep(1)
-            print(f"Cliente {nome} adicionado(a) com sucesso!")
-        except ValueError:
-            print("Por favor, digite um valor válido!")
+        while True:
+            try:
+                nome = input("Digite o nome do cliente: ")
+                idade = int(input("Digite a idade do cliente: "))
+                cursor = self.conn.cursor()
+                cursor.execute("INSERT INTO clientes (nome, idade) VALUES (%s, %s);", (nome, idade,))
+                self.conn.commit()
+                time.sleep(1)
+                print(f"Cliente {nome} adicionado(a) com sucesso!")
+                time.sleep(0.7)
+                print("\n[1] - Sim\n[2] - Não\n")
+                escolha = int(input("Deseja adicionar mais ? "))
+
+                if escolha == 1:
+                    continue
+                elif escolha == 2:
+                    break
+                else:
+                    print("Opção inválida! Tente novamente!")
+                    continue
+            except ValueError:
+                print("Por favor, digite um valor válido!")
             
 
     # Função de adicionar um novo produto
     def adicionar_produto(self):
-        try:
-            produto = input("Qual será o produto ? ").upper()
-            valorUnitario = float(input("Qual será o valor unitário do produto ? "))
-            
-            cursor = self.conn.cursor()
-            cursor.execute("SELECT idCategoria, descricao FROM categorias;")
-            self.columms = [desc[0] for desc in cursor.description]
-            self.rows = cursor.fetchall()
-            print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-            print("\n")
+        while True:
+            try:
+                produto = input("Qual será o produto ? ").upper()
+                valorUnitario = float(input("Qual será o valor unitário do produto ? "))
+                
+                cursor = self.conn.cursor()
+                cursor.execute("SELECT idCategoria, descricao FROM categorias;")
+                self.columms = [desc[0] for desc in cursor.description]
+                self.rows = cursor.fetchall()
+                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                print("\n")
 
-            categoria = int(input("Escolha a categoria do produto a partir de seu ID: "))
-            cursor.execute("INSERT INTO produtos (descricao, valorUnitario, categoria_idCategoria) VALUES (%s, %s, %s)", (produto, valorUnitario, categoria,))
-            self.conn.commit()
-            time.sleep(1)
-            print("Produto adicionado com sucesso")
-        except ValueError:
-            print("Por favor, digite um valor válido!")
+                categoria = int(input("Escolha a categoria do produto a partir de seu ID: "))
+                cursor.execute("INSERT INTO produtos (descricao, valorUnitario, categoria_idCategoria) VALUES (%s, %s, %s)", (produto, valorUnitario, categoria,))
+                self.conn.commit()
+                time.sleep(1)
+                print("Produto adicionado com sucesso")
+                time.sleep(0.7)
+                print("\n[1] - Sim\n[2] - Não\n")
+                escolha = int(input("Deseja adicionar mais ? "))
+
+                if escolha == 1:
+                    continue
+                elif escolha == 2:
+                    break
+                else:
+                    print("Opção inválida! Tente novamente!")
+                    continue
+            except ValueError:
+                print("Por favor, digite um valor válido!")
 
 
     # Função de atualização dos dados de um cliente
