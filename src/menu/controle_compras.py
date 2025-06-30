@@ -21,7 +21,7 @@ class Compras(ConectarBanco):
         print("\n")
         cursor = self.conn.cursor()
         cursor.execute("SELECT p.idProduto, p.descricao AS produto, p.valorUnitario, c.descricao AS categoria " \
-        "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria;")
+        "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria ORDER BY p.idProduto;")
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
@@ -226,11 +226,16 @@ class Compras(ConectarBanco):
 
                     print("\n[1] - Sim\n[2] - Não\n")
                     comprarDeNovo = int(input("Deseja comprar mais itens ? "))
-                    if comprarDeNovo == 2:
-                        self.pagamento(idcliente)
-                        time.sleep(1)
-                        break
-                    elif comprarDeNovo == 1:
-                        continue
+                    while comprarDeNovo > 2:
+                        print("Por favor, digite uma opção válida!")
+                        print("\n[1] - Sim\n[2] - Não\n")
+                        comprarDeNovo = int(input("Deseja comprar mais itens ? "))
+                    else:  
+                        if comprarDeNovo == 2:
+                            self.pagamento(idcliente)
+                            time.sleep(1)
+                            break
+                        elif comprarDeNovo == 1:
+                            continue
             except ValueError:
                 print("Por favor, digite um valor válido")
