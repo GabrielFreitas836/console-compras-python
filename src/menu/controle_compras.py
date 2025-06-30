@@ -226,6 +226,8 @@ class Compras(ConectarBanco):
 
                     print("\n[1] - Sim\n[2] - Não\n")
                     comprarDeNovo = int(input("Deseja comprar mais itens ? "))
+
+                    # Loop while utilizado para caso a opção seja inválida
                     while comprarDeNovo > 2:
                         print("Por favor, digite uma opção válida!")
                         print("\n[1] - Sim\n[2] - Não\n")
