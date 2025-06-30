@@ -190,6 +190,43 @@ class Compras(ConectarBanco):
         cursor.execute("UPDATE pedidos SET pagamento_idPagamento = %s WHERE cliente_idCliente = %s", (idpagamento, idcliente,))
         self.conn.commit()
 
+    # Função de remover um item do carrinho
+    def remover_item(self, idcliente):
+        while True:
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
+            "FROM itenspedidos it " \
+            "INNER JOIN pedidos p ON p.item_idItem = it.idItens " \
+            "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+            "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
+            "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s;", (idcliente,))
+
+            self.columms = [desc[0] for desc in cursor.description]
+            self.rows = cursor.fetchall()
+
+            if self.rows == []:
+                print("Não há itens registrados!")
+                break
+            else:
+                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                itemRemovido = int(input("Escolha qual item será removido pelo ID: "))
+
+                for id, cliente, produto, valorUni, categoria, quantidade, valorTot in self.rows:
+                    if id == itemRemovido:
+                        cursor = self.conn.cursor()
+                        cursor.execute("DELETE FROM pedidos WHERE item_idItem = %s;", (itemRemovido,))
+                        cursor.execute("DELETE FROM itenspedidos WHERE idItens = %s;", (itemRemovido,))
+                        self.conn.commit()
+                        id = itemRemovido
+                        print("Item removido com sucesso!")
+                
+                if id != itemRemovido:
+                    print("Item não encontrado! Tente novamente!")
+                    continue
+                else:
+                    break
+
+
     # Função de adicionar produtos ao 'itenspedidos'
     def adicionar_ao_carrinho(self, idcliente):
         print("\n")
@@ -224,20 +261,23 @@ class Compras(ConectarBanco):
 
                     self.carregar_pedidos(idcliente)
 
-                    print("\n[1] - Sim\n[2] - Não\n")
-                    comprarDeNovo = int(input("Deseja comprar mais itens ? "))
+                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
+                    opcoes = int(input("O que deseja fazer agora ? "))
 
                     # Loop while utilizado para caso a opção seja inválida
-                    while comprarDeNovo > 2:
+                    while opcoes > 3:
                         print("Por favor, digite uma opção válida!")
-                        print("\n[1] - Sim\n[2] - Não\n")
-                        comprarDeNovo = int(input("Deseja comprar mais itens ? "))
+                        print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
+                        opcoes = int(input("O que deseja fazer agora ? "))
                     else:  
-                        if comprarDeNovo == 2:
+                        if opcoes == 2:
                             self.pagamento(idcliente)
                             time.sleep(1)
                             break
-                        elif comprarDeNovo == 1:
+                        elif opcoes == 1:
+                            continue
+                        elif opcoes == 3:
+                            self.remover_item(idcliente)
                             continue
             except ValueError:
                 print("Por favor, digite um valor válido")
