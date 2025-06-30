@@ -115,7 +115,7 @@ class Gerente(ConectarBanco):
                     print("Abrindo aba de pedidos...")
                     time.sleep(1)
                     print("=" *50)
-                    print("\n[1] - Mostrar tabela de pedidos\n")
+                    print("\n[1] - Mostrar tabela de pedidos\n[2] - Deletar pedido existente\n[3] - Limpar tabela de pedidos\n")
                     subescolha = int(input("O que você gostaria de fazer ? "))
                     print("=" *50)
 
@@ -136,6 +136,13 @@ class Gerente(ConectarBanco):
                         else:
                             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
                             break
+                    elif subescolha == 2:
+                        self.deletar_pedido()
+                    
+                    elif subescolha == 3:
+                        self.limpar_pedidos()
+                        break
+
                     else:
                         print("Opção inválida! Retornando ao início...")
                         time.sleep(0.5)
@@ -552,6 +559,39 @@ class Gerente(ConectarBanco):
                 except ValueError:
                     print("Por favor, digite um número válido!")
 
+    def deletar_pedido(self):
+        while True:
+            time.sleep(1)
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT p.idPedido, cl.nome AS cliente, it.quantidade, pr.descricao AS produto, pr.valorUnitario, it.valorTotal, pa.descricao AS formaPagamento FROM pedidos p INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+            "INNER JOIN itenspedidos it ON p.item_idItem = it.idItens " \
+            "INNER JOIN produtos pr ON it.produto_idProduto = pr.idProduto " \
+            "INNER JOIN pagamento pa ON p.pagamento_idPagamento = pa.idPagamento ORDER BY p.idPedido;")
+            self.columms = [desc[0] for desc in cursor.description]
+            self.rows = cursor.fetchall()
+
+            if self.rows == []:
+                print("Não há pedidos registrados!")
+                continue
+            else:
+                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                print("\n")
+                pedidoDeletado = int(input("Escolha pelo ID qual pedido você quer deletar: "))
+                for id, cliente, quantidade, produto, valorUn, valorTot, pagamento in self.rows:
+                    if pedidoDeletado == id:
+                        cursor.execute("DELETE FROM pedidos WHERE idPedido = %s;", (pedidoDeletado,))
+                        self.conn.commit()
+                        id = pedidoDeletado
+                        print("Pedido deletado com sucesso!")
+                        cursor.execute("ALTER TABLE pedidos AUTO_INCREMENT = %s;", (pedidoDeletado,))
+                        break
+
+                if id != pedidoDeletado:
+                    print("ID inválido! Tente novamente!")
+                    continue
+                else:
+                    break
+
     # Função de limpeza total da tabela clientes
     def limpar_clientes(self):
         time.sleep(1)
@@ -584,6 +624,23 @@ class Gerente(ConectarBanco):
         print("Reativando restrições de chaves estrangeiras...")
         time.sleep(0.8)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+        self.conn.commit()
+
+    # Função de limpeza total da tabela pedidos
+    def limpar_pedidos(self):
+        time.sleep(1)
+        cursor = self.conn.cursor()
+        print("Desativando restrições de chaves estrangeiras temporariamente...")
+        time.sleep(1.3)
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
+        print("Limpando a tabelas pedidos...")
+        time.sleep(1.3)
+        cursor.execute("TRUNCATE TABLE pedidos;")
+        print("Tabela pedidos limpa com sucesso!")
+        time.sleep(0.5)
+        print("Reativando restrições de chaves estrangeiras...")
+        time.sleep(0.8)
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
 
                     
