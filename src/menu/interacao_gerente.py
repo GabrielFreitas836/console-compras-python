@@ -7,7 +7,8 @@
 
 from config.conectar_banco import ConectarBanco
 from tabulate import tabulate
-from colorama import Fore, Style # Biblioteca utilizada para colorir textos
+# Biblioteca utilizada para colorir textos
+from colorama import Fore, Style 
 import time
 
 # Função inicializadora da classe + init da classe ConectarBanco
