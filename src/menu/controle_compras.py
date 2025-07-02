@@ -211,10 +211,11 @@ class Compras(ConectarBanco):
     # Função de adicionar produtos ao 'itenspedidos'
     def adicionar_ao_carrinho(self, idcliente):
         print("\n")
+
+        valorTotal = 0.0
+        qtdExtra = 0
+
         while True:
-
-            valorTotal = 0.0
-
             try:
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
@@ -225,7 +226,8 @@ class Compras(ConectarBanco):
                 
                 for id, valor in self.rows:
                     if id == escolhaProduto:
-                        valorTotal = valor * quantidadeProduto
+                        qtdExtra += quantidadeProduto
+                        valorTotal = valor * qtdExtra
                         escolhaProduto = id
                         break
                 
@@ -241,11 +243,31 @@ class Compras(ConectarBanco):
 
                     for idpedido in self.rows:
                         pass
-                    cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (quantidadeProduto, idpedido[0], escolhaProduto, valorTotal,))
-                    self.conn.commit()
-                    print("Item salvo com sucesso!")
-                    time.sleep(0.3)
-                    print("=" *50)
+
+                    cursor.execute("SELECT p.cliente_idCliente, it.produto_idProduto, COUNT(produto_idProduto) AS total FROM itenspedidos it INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido WHERE p.cliente_idCliente = %s GROUP BY p.cliente_idCliente, it.produto_idProduto ORDER BY p.cliente_idCliente, it.produto_idProduto;", (idcliente,))
+                    self.rows = cursor.fetchall()
+
+                    if self.rows == []:
+                        cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (quantidadeProduto, idpedido[0], escolhaProduto, valorTotal,))
+                        self.conn.commit()
+                        print("Item salvo com sucesso!")
+                        time.sleep(0.3)
+                        print("=" *50)
+                    else:
+                        for cliente, produto, total in self.rows:
+                            print(produto)
+                            if total >= 1:
+                                cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
+                                self.conn.commit()
+                                print("Item salvo com sucesso!")
+                                time.sleep(0.3)
+                                print("=" *50)
+                            else:
+                                cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
+                                self.conn.commit()
+                                print("Item salvo com sucesso!")
+                                time.sleep(0.3)
+                                print("=" *50)
 
                     cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
                     "FROM itenspedidos it " \
