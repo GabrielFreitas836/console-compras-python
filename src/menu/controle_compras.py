@@ -31,26 +31,8 @@ class Compras(ConectarBanco):
     def carregar_pedidos(self, idcliente):
         self.cliente = idcliente
         cursor = self.conn.cursor()
-
-        # Buscando os IDs de itens para poder adiciona-los em 'pedidos' depois
-        # ORDER BY utilizado para listar em ordem crescente e não causar problemas de pedidos sem clientes
-        cursor.execute("SELECT idItens FROM itenspedidos ORDER BY idItens")
-        self.rows = cursor.fetchall()
-        for iditem in self.rows:
-            pass
         cursor.execute("INSERT INTO pedidos (cliente_idCliente, pagamento_idPagamento) VALUES (%s, 4);", (idcliente,))
         self.conn.commit()
-
-        cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
-        "FROM itenspedidos it " \
-        "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
-        "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
-        "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
-        "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s;", (idcliente,))
-
-        self.columms = [desc[0] for desc in cursor.description]
-        self.rows = cursor.fetchall()
-        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
     # Função de pagamento das compras
     def pagamento(self, idcliente):
@@ -252,13 +234,29 @@ class Compras(ConectarBanco):
                     time.sleep(1)
                     continue
                 else:
-                    cursor.execute("INSERT INTO itenspedidos (quantidade, produto_idProduto, valorTotal) VALUES (%s, %s, %s)", (quantidadeProduto, escolhaProduto, valorTotal,))
+                    self.carregar_pedidos(idcliente)
+
+                    cursor.execute("SELECT idPedido FROM pedidos WHERE cliente_idCliente = %s;", (idcliente,))
+                    self.rows = cursor.fetchall()
+
+                    for idpedido in self.rows:
+                        pass
+                    cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (quantidadeProduto, idpedido[0], escolhaProduto, valorTotal,))
                     self.conn.commit()
                     print("Item salvo com sucesso!")
                     time.sleep(0.3)
                     print("=" *50)
 
-                    self.carregar_pedidos(idcliente)
+                    cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
+                    "FROM itenspedidos it " \
+                    "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
+                    "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+                    "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
+                    "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s ORDER BY it.idItens;", (idcliente,))
+
+                    self.columms = [desc[0] for desc in cursor.description]
+                    self.rows = cursor.fetchall()
+                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
                     print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
                     opcoes = int(input("O que deseja fazer agora ? "))
