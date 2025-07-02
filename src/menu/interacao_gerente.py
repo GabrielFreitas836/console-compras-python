@@ -125,7 +125,7 @@ class Gerente(ConectarBanco):
                         print("\n")
                         cursor = self.conn.cursor()
                         cursor.execute("SELECT p.idPedido, cl.nome AS cliente, it.quantidade, pr.descricao AS produto, pr.valorUnitario, it.valorTotal, pa.descricao AS formaPagamento FROM pedidos p INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
-                        "INNER JOIN itenspedidos it ON p.item_idItem = it.idItens " \
+                        "INNER JOIN itenspedidos it ON it.pedido_idPedido = p.idPedido " \
                         "INNER JOIN produtos pr ON it.produto_idProduto = pr.idProduto " \
                         "INNER JOIN pagamento pa ON p.pagamento_idPagamento = pa.idPagamento ORDER BY p.idPedido;")
                         self.columms = [desc[0] for desc in cursor.description]
@@ -565,7 +565,7 @@ class Gerente(ConectarBanco):
             time.sleep(1)
             cursor = self.conn.cursor()
             cursor.execute("SELECT p.idPedido, cl.nome AS cliente, it.quantidade, pr.descricao AS produto, pr.valorUnitario, it.valorTotal, pa.descricao AS formaPagamento FROM pedidos p INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
-            "INNER JOIN itenspedidos it ON p.item_idItem = it.idItens " \
+            "INNER JOIN itenspedidos it ON it.pedido_idPedido = p.idPedido " \
             "INNER JOIN produtos pr ON it.produto_idProduto = pr.idProduto " \
             "INNER JOIN pagamento pa ON p.pagamento_idPagamento = pa.idPagamento ORDER BY p.idPedido;")
             self.columms = [desc[0] for desc in cursor.description]

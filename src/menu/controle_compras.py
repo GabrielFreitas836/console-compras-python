@@ -38,12 +38,12 @@ class Compras(ConectarBanco):
         self.rows = cursor.fetchall()
         for iditem in self.rows:
             pass
-        cursor.execute("INSERT INTO pedidos (cliente_idCliente, item_idItem, pagamento_idPagamento) VALUES (%s, %s, 4);", (idcliente, iditem[0], ))
+        cursor.execute("INSERT INTO pedidos (cliente_idCliente, pagamento_idPagamento) VALUES (%s, 4);", (idcliente,))
         self.conn.commit()
 
         cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
         "FROM itenspedidos it " \
-        "INNER JOIN pedidos p ON p.item_idItem = it.idItens " \
+        "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
         "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
         "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
         "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s;", (idcliente,))
@@ -58,7 +58,7 @@ class Compras(ConectarBanco):
         cursor = self.conn.cursor()
         cursor.execute("SELECT cl.idCliente, cl.nome, SUM(it.valorTotal) AS totalComprado FROM pedidos p " \
         "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
-        "INNER JOIN itenspedidos it ON p.item_idItem = it.idItens " \
+        "INNER JOIN itenspedidos it ON p.idPedido = it.pedido_idPedido " \
         "WHERE cl.idCliente = %s;", (idcliente,))
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
@@ -196,7 +196,7 @@ class Compras(ConectarBanco):
             cursor = self.conn.cursor()
             cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
             "FROM itenspedidos it " \
-            "INNER JOIN pedidos p ON p.item_idItem = it.idItens " \
+            "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
             "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
             "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
             "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s;", (idcliente,))
@@ -214,7 +214,6 @@ class Compras(ConectarBanco):
                 for id, cliente, produto, valorUni, categoria, quantidade, valorTot in self.rows:
                     if id == itemRemovido:
                         cursor = self.conn.cursor()
-                        cursor.execute("DELETE FROM pedidos WHERE item_idItem = %s;", (itemRemovido,))
                         cursor.execute("DELETE FROM itenspedidos WHERE idItens = %s;", (itemRemovido,))
                         self.conn.commit()
                         id = itemRemovido
