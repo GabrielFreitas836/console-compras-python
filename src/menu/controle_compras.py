@@ -219,16 +219,13 @@ class Compras(ConectarBanco):
         while True:
             try:
 
-
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
-
+                        
                 if produtoTrocou:
-                    print("Produto foi trocado!")
                     valorTotal = 0.0
                     qtdExtra = 0
                 else:
-                    print("Produto não foi encontrado!")
                     pass
 
                 cursor = self.conn.cursor()
@@ -259,30 +256,32 @@ class Compras(ConectarBanco):
                     self.rows = cursor.fetchall()
 
                     if self.rows == []:
-                        produtoTrocou = False
                         cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
                         self.conn.commit()
                         print("Item salvo com sucesso!")
                         time.sleep(0.3)
                         print("=" *50)
+                        produtoTrocou = False
                     else:
-
                         for cliente, produto, total in self.rows:
+                            print("Produto: ", produto)
+                            print("Minha escolha: ", escolhaProduto)
                             if total >= 1 and produto == escolhaProduto:
-                                produtoTrocou = False
                                 cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
                                 self.conn.commit()
                                 print("Item atualizado com sucesso!")
                                 time.sleep(0.3)
                                 print("=" *50)
+                                produtoTrocou = False
                             elif total >= 1 and produto != escolhaProduto:
-                                produtoTrocou = True
+                                print("Produto diferente")
                                 cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
                                 cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
                                 self.conn.commit()
                                 print("Item atualizado com sucesso!")
                                 time.sleep(0.3)
                                 print("=" *50)
+                                produtoTrocou = True
 
                     cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
                     "FROM itenspedidos it " \
@@ -313,5 +312,6 @@ class Compras(ConectarBanco):
                         elif opcoes == 3:
                             self.remover_item(idcliente)
                             continue
+                    return produtoTrocou
             except ValueError:
                 print("Por favor, digite um valor válido")
