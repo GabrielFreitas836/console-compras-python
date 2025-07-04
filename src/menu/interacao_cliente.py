@@ -45,6 +45,7 @@ class Cliente(ConectarBanco):
                 self.conn.commit()
                 time.sleep(0.7)
                 print(f"Cliente {nome} adicionado(a) com sucesso!")
+                self.escolher_cliente()
                 return True
             else:
                 print("=" *50)
