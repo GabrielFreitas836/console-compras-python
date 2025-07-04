@@ -18,10 +18,12 @@ class Compras(ConectarBanco):
     def carregar_produtos(self):
         time.sleep(0.2)
         print("=" *50)
-        print("\n")
+        print("\n[1] - Higiene\n[2] - Limpeza\n[3] - Hortifruti\n[4] - Açougue\n[5] - Doces\n[6] - Festa\n")
+        categoriaEscolhida = int(input("Escolha uma categoria: "))
+        # Lógica de separação por categorias
         cursor = self.conn.cursor()
-        cursor.execute("SELECT p.idProduto, p.descricao AS produto, p.valorUnitario, c.descricao AS categoria " \
-        "FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria ORDER BY p.idProduto;")
+        cursor.execute("""SELECT p.idProduto, p.descricao AS produto, p.valorUnitario
+        FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria WHERE c.idCategoria = %s ORDER BY p.idProduto;""", (categoriaEscolhida,))
         self.columms = [desc[0] for desc in cursor.description]
         self.rows = cursor.fetchall()
         print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
