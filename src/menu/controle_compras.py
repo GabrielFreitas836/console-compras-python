@@ -214,27 +214,29 @@ class Compras(ConectarBanco):
 
         valorTotal = 0.0
         qtdExtra = 0
-        produtoTrocou = False
 
         while True:
             try:
 
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
-                        
-                if produtoTrocou:
-                    valorTotal = 0.0
-                    qtdExtra = 0
-                else:
-                    pass
-
+                
+                # Selecionando a quantidade de um item a partir do cliente atual e do produto escolhido atual
                 cursor = self.conn.cursor()
+                cursor.execute("""SELECT it.quantidade FROM itenspedidos it INNER JOIN pedidos p
+                ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s;""", (idcliente, escolhaProduto,))
+                qtdProduto = cursor.fetchone()
+                if qtdProduto == None:
+                    qtdProduto = 0
+                    qtdExtra = qtdProduto + quantidadeProduto
+                else:
+                    qtdExtra = qtdProduto[0] + quantidadeProduto
+
                 cursor.execute("SELECT idProduto, valorUnitario FROM produtos;")
                 self.rows = cursor.fetchall()
                 
                 for id, valor in self.rows:
                     if id == escolhaProduto:
-                        qtdExtra += quantidadeProduto
                         valorTotal = valor * qtdExtra
                         escolhaProduto = id
                         break
@@ -261,27 +263,23 @@ class Compras(ConectarBanco):
                         print("Item salvo com sucesso!")
                         time.sleep(0.3)
                         print("=" *50)
-                        produtoTrocou = False
                     else:
                         for cliente, produto, total in self.rows:
-                            print("Produto: ", produto)
-                            print("Minha escolha: ", escolhaProduto)
                             if total >= 1 and produto == escolhaProduto:
+                                print("Entrei no 1")
                                 cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
                                 self.conn.commit()
                                 print("Item atualizado com sucesso!")
                                 time.sleep(0.3)
                                 print("=" *50)
-                                produtoTrocou = False
                             elif total >= 1 and produto != escolhaProduto:
-                                print("Produto diferente")
+                                print("Entrei 2")
                                 cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
                                 cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
                                 self.conn.commit()
-                                print("Item atualizado com sucesso!")
+                                print("Item salvo e atualizado com sucesso!")
                                 time.sleep(0.3)
                                 print("=" *50)
-                                produtoTrocou = True
 
                     cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
                     "FROM itenspedidos it " \
@@ -312,6 +310,5 @@ class Compras(ConectarBanco):
                         elif opcoes == 3:
                             self.remover_item(idcliente)
                             continue
-                    return produtoTrocou
             except ValueError:
                 print("Por favor, digite um valor válido")
