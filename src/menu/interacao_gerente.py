@@ -219,7 +219,7 @@ class Gerente(ConectarBanco):
                 cursor.execute("INSERT INTO produtos (descricao, valorUnitario, categoria_idCategoria) VALUES (%s, %s, %s)", (produto, valorUnitario, categoria,))
                 self.conn.commit()
                 time.sleep(1)
-                print("Produto adicionado com sucesso")
+                print("Produto adicionado com sucesso!")
                 time.sleep(0.7)
                 print("\n[1] - Sim\n[2] - Não\n")
                 escolha = int(input("Deseja adicionar mais ? "))
