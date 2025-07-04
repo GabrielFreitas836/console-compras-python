@@ -303,6 +303,7 @@ class Compras(ConectarBanco):
                     else:  
                         if opcoes == 2:
                             self.pagamento(idcliente)
+                            cursor.close()
                             time.sleep(1)
                             break
                         elif opcoes == 1:

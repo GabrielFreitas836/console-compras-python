@@ -139,6 +139,7 @@ class Gerente(ConectarBanco):
                             break
                     elif subescolha == 2:
                         self.deletar_pedido()
+                        break
                     
                     elif subescolha == 3:
                         self.limpar_pedidos()
@@ -191,6 +192,7 @@ class Gerente(ConectarBanco):
                 if escolha == 1:
                     continue
                 elif escolha == 2:
+                    cursor.close()
                     break
                 else:
                     print("Opção inválida! Tente novamente!")
@@ -225,6 +227,7 @@ class Gerente(ConectarBanco):
                 if escolha == 1:
                     continue
                 elif escolha == 2:
+                    cursor.close()
                     break
                 else:
                     print("Opção inválida! Tente novamente!")
@@ -276,6 +279,7 @@ class Gerente(ConectarBanco):
                             print("Cliente não encontrado! Tente novamente!")
                             continue
                         else:
+                            cursor.close()
                             break
 
                     elif escolha == 2:
@@ -302,6 +306,7 @@ class Gerente(ConectarBanco):
                             print("Cliente não encontrado! Tente novamente!")
                             continue
                         else:
+                            cursor.close()
                             break
 
                     elif escolha == 3:
@@ -330,6 +335,7 @@ class Gerente(ConectarBanco):
                             print("Cliente não encontrado! Tente novamente!")
                             continue
                         else:
+                            cursor.close()
                             break
                     
                     else:
@@ -382,6 +388,7 @@ class Gerente(ConectarBanco):
                             print("Produto não encontrado! Tente novamente!")
                             continue
                         else:
+                            cursor.close()
                             break
 
                     elif escolha == 2:
@@ -408,6 +415,7 @@ class Gerente(ConectarBanco):
                             print("Produto não encontrado! Tente novamente!")
                             continue
                         else:
+                            cursor.close()
                             break
 
                     elif escolha == 3:
@@ -434,6 +442,7 @@ class Gerente(ConectarBanco):
                             print("Produto não encontrado! Tente novamente!")
                             continue
                         else:
+                            cursor.close()
                             break
 
                     elif escolha == 4:
@@ -464,6 +473,7 @@ class Gerente(ConectarBanco):
                             print("Produto não encontrado! Tente novamente!")
                             continue
                         else:
+                            cursor.close()
                             break
                     else:
                         print("Por favor, selecione uma opção válida!")
@@ -510,6 +520,7 @@ class Gerente(ConectarBanco):
                         print("Cliente não encontrado! Tente novamente!")
                         continue
                     else:
+                        cursor.close()
                         break
                 except ValueError:
                     print("Por favor, digite um número válido!")
@@ -556,6 +567,7 @@ class Gerente(ConectarBanco):
                         print("Produto não encontrado! Tente novamente!")
                         continue
                     else:
+                        cursor.close()
                         break
                 except ValueError:
                     print("Por favor, digite um número válido!")
@@ -591,6 +603,7 @@ class Gerente(ConectarBanco):
                     print("ID inválido! Tente novamente!")
                     continue
                 else:
+                    cursor.close()
                     break
 
     # Função de limpeza total da tabela clientes
@@ -609,6 +622,7 @@ class Gerente(ConectarBanco):
         time.sleep(0.8)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
+        cursor.close()
 
     # Função de limpeza total da tabela produtos
     def limpar_produtos(self):
@@ -626,6 +640,7 @@ class Gerente(ConectarBanco):
         time.sleep(0.8)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
         self.conn.commit()
+        cursor.close()
 
     # Função de limpeza total da tabela pedidos
     def limpar_pedidos(self):
@@ -643,5 +658,5 @@ class Gerente(ConectarBanco):
         time.sleep(0.8)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
-
-                    
+        cursor.close()
+      
