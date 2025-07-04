@@ -217,6 +217,8 @@ class Compras(ConectarBanco):
 
         while True:
             try:
+                trigger1 = True
+                trigger2 = True
 
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
@@ -266,50 +268,53 @@ class Compras(ConectarBanco):
                     else:
                         for cliente, produto, total in self.rows:
                             if total >= 1 and produto == escolhaProduto:
-                                print("Entrei no 1")
                                 cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
                                 self.conn.commit()
                                 print("Item atualizado com sucesso!")
                                 time.sleep(0.3)
                                 print("=" *50)
                             elif total >= 1 and produto != escolhaProduto:
-                                print("Entrei 2")
                                 cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
                                 cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
                                 self.conn.commit()
                                 print("Item salvo e atualizado com sucesso!")
                                 time.sleep(0.3)
                                 print("=" *50)
+                    while trigger1:
+                        cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
+                        "FROM itenspedidos it " \
+                        "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
+                        "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+                        "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
+                        "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s ORDER BY it.idItens;", (idcliente,))
 
-                    cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
-                    "FROM itenspedidos it " \
-                    "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
-                    "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
-                    "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
-                    "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s ORDER BY it.idItens;", (idcliente,))
+                        self.columms = [desc[0] for desc in cursor.description]
+                        self.rows = cursor.fetchall()
+                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
-                    self.columms = [desc[0] for desc in cursor.description]
-                    self.rows = cursor.fetchall()
-                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-
-                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
-                    opcoes = int(input("O que deseja fazer agora ? "))
-
-                    # Loop while utilizado para caso a opção seja inválida
-                    while opcoes > 3:
-                        print("Por favor, digite uma opção válida!")
                         print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
                         opcoes = int(input("O que deseja fazer agora ? "))
-                    else:  
-                        if opcoes == 2:
-                            self.pagamento(idcliente)
-                            cursor.close()
-                            time.sleep(1)
-                            break
-                        elif opcoes == 1:
-                            continue
-                        elif opcoes == 3:
-                            self.remover_item(idcliente)
-                            continue
+
+                        # Loop while utilizado para caso a opção seja inválida
+                        while opcoes > 3:
+                            print("Por favor, digite uma opção válida!")
+                            print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
+                            opcoes = int(input("O que deseja fazer agora ? "))
+                        else:  
+                            if opcoes == 2:
+                                trigger1 = False
+                                self.pagamento(idcliente)
+                                cursor.close()
+                                trigger2 = False
+                                time.sleep(1)
+                            elif opcoes == 1:
+                                trigger1 = False
+                                continue
+                            elif opcoes == 3:
+                                trigger1 = True
+                                self.remover_item(idcliente)
+                                continue
+                if not trigger2:
+                    break
             except ValueError:
                 print("Por favor, digite um valor válido")

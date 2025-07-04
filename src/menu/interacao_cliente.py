@@ -98,11 +98,10 @@ class Cliente(ConectarBanco):
                     self.compras.carregar_produtos()
                     self.compras.adicionar_ao_carrinho(escolha)
                     id = escolha
-                    return True
+                    break
                 
-
             if id != escolha:
                 print("Cliente não encontrado! Tente novamente!")
                 continue
             else:
-                break
+                return True

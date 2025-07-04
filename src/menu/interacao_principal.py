@@ -46,14 +46,6 @@ class Menu:
                         self.cliente.fechar_conexao()
                         break
                     
-                    if self.cliente.rows == []:
-                        print("\n")
-                        pass
-                    else:
-                        continuarEscolha = self.cliente.escolher_cliente()
-                        if not continuarEscolha:
-                            self.cliente.fechar_conexao()
-                            break
                 else:
                     print(tabulate(self.cliente.rows, headers=self.cliente.columms, tablefmt="grid"))
                     time.sleep(0.7)    
