@@ -7,6 +7,8 @@
 
 from config.conectar_banco import ConectarBanco
 from tabulate import tabulate
+# Biblioteca utilizada para colorir textos
+from colorama import Fore, Style
 import time
 
 class Compras(ConectarBanco):
@@ -34,12 +36,13 @@ class Compras(ConectarBanco):
                 if trocarCategoria == 1:
                     continue
                 elif trocarCategoria == 2:
-                    break
+                    return categoriaEscolhida
                 else:
                     print("Opção inválida! Tente novamente!")
                     continue
             except ValueError:
                 print("Por favor, digite um valor válido!")
+                continue
 
     # Função de inserção de dados na tabela 'pedidos' 
     #  Carregar os dados dos pedidos junto à outras colunas das outras tabelas
@@ -203,7 +206,11 @@ class Compras(ConectarBanco):
 
             if self.rows == []:
                 print("Não há itens registrados!")
-                break
+                return False
+            elif len(self.rows) == 1:
+                print("Não é possível remover um item do carrinho quando só há uma linha registrada!")
+                time.sleep(0.3)
+                return False
             else:
                 print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
                 itemRemovido = int(input("Escolha qual item será removido pelo ID: "))
@@ -215,6 +222,9 @@ class Compras(ConectarBanco):
                         self.conn.commit()
                         id = itemRemovido
                         print("Item removido com sucesso!")
+                        if len(self.rows) > 1:
+                            return True
+                        break
                 
                 if id != itemRemovido:
                     print("Item não encontrado! Tente novamente!")
@@ -229,10 +239,12 @@ class Compras(ConectarBanco):
         categoriaEscolhida = 0
         valorTotal = 0.0
         qtdExtra = 0
+        remover = False
 
         while True:
             try:
-                self.carregar_produtos(categoriaEscolhida)
+                produtos = self.carregar_produtos(categoriaEscolhida)
+                categoriaEscolhida = produtos
 
                 trigger1 = True
                 trigger2 = True
@@ -240,98 +252,129 @@ class Compras(ConectarBanco):
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
                 
-                # Selecionando a quantidade de um item a partir do cliente atual e do produto escolhido atual
                 cursor = self.conn.cursor()
-                cursor.execute("""SELECT it.quantidade FROM itenspedidos it INNER JOIN pedidos p
-                ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s;""", (idcliente, escolhaProduto, ))
-                qtdProduto = cursor.fetchone()
-                if qtdProduto == None:
-                    qtdProduto = 0
-                    qtdExtra = qtdProduto + quantidadeProduto
-                else:
-                    qtdExtra = qtdProduto[0] + quantidadeProduto
-
-                cursor.execute("SELECT idProduto, valorUnitario FROM produtos;")
+                cursor.execute("""SELECT p.idProduto, p.descricao AS produto FROM produtos p 
+                JOIN categorias c ON p.categoria_idCategoria = c.idCategoria WHERE c.idCategoria = %s ORDER BY p.idProduto;""", (categoriaEscolhida,))
                 self.rows = cursor.fetchall()
-                
-                for id, valor in self.rows:
+
+                for id, produto in self.rows:
                     if id == escolhaProduto:
-                        valorTotal = valor * qtdExtra
                         escolhaProduto = id
                         break
-                
+
                 if escolhaProduto != id:
-                    print("ID Inválido! Tente novamente!")
-                    time.sleep(1)
+                    print("Esse ID não pertence à categoria escolhida!")
+                    time.sleep(0.3)
+                    print("Tente novamente!")
                     continue
-                else:
-                    self.carregar_pedidos(idcliente)
-
-                    cursor.execute("SELECT idPedido FROM pedidos WHERE cliente_idCliente = %s;", (idcliente,))
-                    self.rows = cursor.fetchall()
-
-                    for idpedido in self.rows:
-                        pass
-
-                    cursor.execute("SELECT p.cliente_idCliente, it.produto_idProduto, COUNT(produto_idProduto) AS total FROM itenspedidos it INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s AND pr.categoria_idCategoria = %s GROUP BY p.cliente_idCliente, it.produto_idProduto ORDER BY p.cliente_idCliente, it.produto_idProduto;", (idcliente, escolhaProduto, categoriaEscolhida,))
-                    self.rows = cursor.fetchall()
-
-                    if self.rows == []:
-                        cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
-                        self.conn.commit()
-                        print("Item salvo com sucesso!")
-                        time.sleep(0.3)
-                        print("=" *50)
+                else:                    
+                    # Selecionando a quantidade de um item a partir do cliente atual e do produto escolhido atual
+                    cursor = self.conn.cursor()
+                    cursor.execute("""SELECT it.quantidade FROM itenspedidos it INNER JOIN pedidos p
+                    ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s;""", (idcliente, escolhaProduto, ))
+                    qtdProduto = cursor.fetchone()
+                    if qtdProduto == None:
+                        qtdProduto = 0
+                        qtdExtra = qtdProduto + quantidadeProduto
                     else:
-                        for cliente, produto, total in self.rows:
-                            if total >= 1 and produto == escolhaProduto:
-                                cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
-                                self.conn.commit()
-                                print("Item atualizado com sucesso!")
-                                time.sleep(0.3)
-                                print("=" *50)
-                            elif total >= 1 and produto != escolhaProduto:
-                                cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
-                                cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
-                                self.conn.commit()
-                                print("Item salvo e atualizado com sucesso!")
-                                time.sleep(0.3)
-                                print("=" *50)
-                    while trigger1:
-                        cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
-                        "FROM itenspedidos it " \
-                        "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
-                        "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
-                        "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
-                        "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s ORDER BY it.idItens;", (idcliente,))
+                        qtdExtra = qtdProduto[0] + quantidadeProduto
 
-                        self.columms = [desc[0] for desc in cursor.description]
+                    cursor.execute("SELECT idProduto, valorUnitario FROM produtos;")
+                    self.rows = cursor.fetchall()
+                    
+                    for id, valor in self.rows:
+                        if id == escolhaProduto:
+                            valorTotal = valor * qtdExtra
+                            escolhaProduto = id
+                            break
+                    
+                    if escolhaProduto != id:
+                        print("ID Inválido! Tente novamente!")
+                        time.sleep(1)
+                        continue
+                    else:
+                        self.carregar_pedidos(idcliente)
+
+                        cursor.execute("SELECT idPedido FROM pedidos WHERE cliente_idCliente = %s;", (idcliente,))
                         self.rows = cursor.fetchall()
-                        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
-                        print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
-                        opcoes = int(input("O que deseja fazer agora ? "))
+                        for idpedido in self.rows:
+                            pass
 
-                        # Loop while utilizado para caso a opção seja inválida
-                        while opcoes > 3:
-                            print("Por favor, digite uma opção válida!")
-                            print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
+                        cursor.execute("SELECT p.cliente_idCliente, it.produto_idProduto, COUNT(produto_idProduto) AS total FROM itenspedidos it INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s AND pr.categoria_idCategoria = %s GROUP BY p.cliente_idCliente, it.produto_idProduto ORDER BY p.cliente_idCliente, it.produto_idProduto;", (idcliente, escolhaProduto, categoriaEscolhida,))
+                        self.rows = cursor.fetchall()
+
+                        if self.rows == []:
+                            cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
+                            self.conn.commit()
+                            print("Item salvo com sucesso!")
+                            time.sleep(0.3)
+                            print("=" *50)
+                        else:
+                            for cliente, produto, total in self.rows:
+                                if total >= 1 and produto == escolhaProduto:
+                                    cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
+                                    self.conn.commit()
+                                    print("Item atualizado com sucesso!")
+                                    time.sleep(0.3)
+                                    print("=" *50)
+                                elif total >= 1 and produto != escolhaProduto:
+                                    cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
+                                    cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
+                                    self.conn.commit()
+                                    print("Item salvo e atualizado com sucesso!")
+                                    time.sleep(0.3)
+                                    print("=" *50)
+                        while trigger1:
+                            cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
+                            "FROM itenspedidos it " \
+                            "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
+                            "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+                            "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
+                            "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s ORDER BY it.idItens;", (idcliente,))
+
+                            self.columms = [desc[0] for desc in cursor.description]
+                            self.rows = cursor.fetchall()
+                            
+                            if len(self.rows) > 1:
+                                remover = True
+                            else:
+                                remover = False
+
+                            print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+
+                            if remover:
+                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
+                            elif not remover:
+                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n")
+
                             opcoes = int(input("O que deseja fazer agora ? "))
-                        else:  
-                            if opcoes == 2:
-                                trigger1 = False
-                                self.pagamento(idcliente)
-                                cursor.close()
-                                trigger2 = False
-                                time.sleep(1)
-                            elif opcoes == 1:
-                                trigger1 = False
-                                continue
-                            elif opcoes == 3:
-                                trigger1 = True
-                                self.remover_item(idcliente)
-                                continue
-                if not trigger2:
-                    break
+
+                            # Loop while utilizado para caso a opção seja inválida
+                            while opcoes > 3:
+                                print("Por favor, digite uma opção válida!")
+                                if remover:
+                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
+                                elif not remover:
+                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n")
+
+                                opcoes = int(input("O que deseja fazer agora ? "))
+                            else:  
+                                if opcoes == 2:
+                                    trigger1 = False
+                                    self.pagamento(idcliente)
+                                    cursor.close()
+                                    trigger2 = False
+                                    time.sleep(1)
+                                elif opcoes == 1:
+                                    trigger1 = False
+                                    continue
+                                elif opcoes == 3:
+                                    trigger1 = True
+                                    remover = self.remover_item(idcliente)
+                                    continue
+                    if not trigger2:
+                        break
             except ValueError:
                 print("Por favor, digite um valor válido")
+                continue
