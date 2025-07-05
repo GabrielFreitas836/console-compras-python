@@ -15,18 +15,31 @@ class Compras(ConectarBanco):
         self.conn = conn
 
     # Função de carregar os dados da tabela 'produtos' + 'categorias'
-    def carregar_produtos(self):
-        time.sleep(0.2)
-        print("=" *50)
-        print("\n[1] - Higiene\n[2] - Limpeza\n[3] - Hortifruti\n[4] - Açougue\n[5] - Doces\n[6] - Festa\n")
-        categoriaEscolhida = int(input("Escolha uma categoria: "))
-        # Lógica de separação por categorias
-        cursor = self.conn.cursor()
-        cursor.execute("""SELECT p.idProduto, p.descricao AS produto, p.valorUnitario
-        FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria WHERE c.idCategoria = %s ORDER BY p.idProduto;""", (categoriaEscolhida,))
-        self.columms = [desc[0] for desc in cursor.description]
-        self.rows = cursor.fetchall()
-        print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+    def carregar_produtos(self, categoriaEscolhida):
+        while True:
+            try:
+                time.sleep(0.2)
+                print("=" *50)
+                print("\n[1] - Higiene\n[2] - Limpeza\n[3] - Hortifruti\n[4] - Açougue\n[5] - Doces\n[6] - Festa\n")
+                categoriaEscolhida = int(input("Escolha uma categoria: "))
+                # Lógica de separação por categorias
+                cursor = self.conn.cursor()
+                cursor.execute("""SELECT p.idProduto, p.descricao AS produto, p.valorUnitario
+                FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria WHERE c.idCategoria = %s ORDER BY p.idProduto;""", (categoriaEscolhida,))
+                self.columms = [desc[0] for desc in cursor.description]
+                self.rows = cursor.fetchall()
+                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                print("\n[1] - Sim\n[2] - Não\n")
+                trocarCategoria = int(input("Deseja ver outra categoria ? "))
+                if trocarCategoria == 1:
+                    continue
+                elif trocarCategoria == 2:
+                    break
+                else:
+                    print("Opção inválida! Tente novamente!")
+                    continue
+            except ValueError:
+                print("Por favor, digite um valor válido!")
 
     # Função de inserção de dados na tabela 'pedidos' 
     #  Carregar os dados dos pedidos junto à outras colunas das outras tabelas
@@ -213,12 +226,14 @@ class Compras(ConectarBanco):
     # Função de adicionar produtos ao 'itenspedidos'
     def adicionar_ao_carrinho(self, idcliente):
         print("\n")
-
+        categoriaEscolhida = 0
         valorTotal = 0.0
         qtdExtra = 0
 
         while True:
             try:
+                self.carregar_produtos(categoriaEscolhida)
+
                 trigger1 = True
                 trigger2 = True
 
@@ -228,7 +243,7 @@ class Compras(ConectarBanco):
                 # Selecionando a quantidade de um item a partir do cliente atual e do produto escolhido atual
                 cursor = self.conn.cursor()
                 cursor.execute("""SELECT it.quantidade FROM itenspedidos it INNER JOIN pedidos p
-                ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s;""", (idcliente, escolhaProduto,))
+                ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s;""", (idcliente, escolhaProduto, ))
                 qtdProduto = cursor.fetchone()
                 if qtdProduto == None:
                     qtdProduto = 0
@@ -258,7 +273,7 @@ class Compras(ConectarBanco):
                     for idpedido in self.rows:
                         pass
 
-                    cursor.execute("SELECT p.cliente_idCliente, it.produto_idProduto, COUNT(produto_idProduto) AS total FROM itenspedidos it INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s GROUP BY p.cliente_idCliente, it.produto_idProduto ORDER BY p.cliente_idCliente, it.produto_idProduto;", (idcliente, escolhaProduto,))
+                    cursor.execute("SELECT p.cliente_idCliente, it.produto_idProduto, COUNT(produto_idProduto) AS total FROM itenspedidos it INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto WHERE p.cliente_idCliente = %s AND it.produto_idProduto = %s AND pr.categoria_idCategoria = %s GROUP BY p.cliente_idCliente, it.produto_idProduto ORDER BY p.cliente_idCliente, it.produto_idProduto;", (idcliente, escolhaProduto, categoriaEscolhida,))
                     self.rows = cursor.fetchall()
 
                     if self.rows == []:
