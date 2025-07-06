@@ -252,6 +252,8 @@ class Compras(ConectarBanco):
                 escolhaProduto = int(input("Escolha qual produto quer comprar pelo ID: "))
                 quantidadeProduto = int(input("Escolha a quantidade: "))
                 
+                # Procura no banco os produtos da categoria escolhida
+                # Se o ID do produto digitado não corresponder à categoria escolhida, ele não adicionará o item ao carrinho
                 cursor = self.conn.cursor()
                 cursor.execute("""SELECT p.idProduto, p.descricao AS produto FROM produtos p 
                 JOIN categorias c ON p.categoria_idCategoria = c.idCategoria WHERE c.idCategoria = %s ORDER BY p.idProduto;""", (categoriaEscolhida,))
