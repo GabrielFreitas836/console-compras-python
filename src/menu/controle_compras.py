@@ -231,6 +231,35 @@ class Compras(ConectarBanco):
                     continue
                 else:
                     break
+    
+    # Função de cancelar a compra
+    def cancelar_compra(self, idcliente):
+        try:
+            time.sleep(1)
+            print("=" *50)
+            print("\n[1] - Sim\n[2] - Não\n")
+            cancelar = int(input("Você realmente deseja cancelar a compra ? "))
+            if cancelar == 2:
+                return False
+            elif cancelar == 1:
+                cursor = self.conn.cursor()
+                print("Desativando restrições de chaves estrangeiras temporariamente...")
+                time.sleep(1.3)
+                cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+                print("Removendo pedido e itens...")
+                time.sleep(1.3)
+                cursor.execute("DELETE it FROM itenspedidos it INNER JOIN pedidos p ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s;", (idcliente,))
+                cursor.execute("DELETE FROM pedidos WHERE cliente_idCliente = %s;", (idcliente,))
+                print("Compra cancelada!")
+                time.sleep(0.3)
+                print("Reativando restrições de chaves estrangeiras...")
+                cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+                self.conn.commit()
+                time.sleep(0.3)
+                print("Retornando ao início...")
+                return True
+        except ValueError:
+            print("Por favor, digite um valor válido!")
 
 
     # Função de adicionar produtos ao 'itenspedidos'
@@ -346,19 +375,19 @@ class Compras(ConectarBanco):
                             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
                             if remover:
-                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
+                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n[4] - Cancelar compra\n")
                             elif not remover:
-                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n")
+                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n[4] - Cancelar compra\n")
 
                             opcoes = int(input("O que deseja fazer agora ? "))
 
                             # Loop while utilizado para caso a opção seja inválida
-                            while opcoes > 3:
+                            while opcoes > 4:
                                 print("Por favor, digite uma opção válida!")
                                 if remover:
-                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n")
+                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n[4] - Cancelar compra\n")
                                 elif not remover:
-                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n")
+                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n[4] - Cancelar compra\n")
 
                                 opcoes = int(input("O que deseja fazer agora ? "))
                             else:  
@@ -375,6 +404,16 @@ class Compras(ConectarBanco):
                                     trigger1 = True
                                     remover = self.remover_item(idcliente)
                                     continue
+                                elif opcoes == 4:
+                                    cancelar = self.cancelar_compra(idcliente)
+                                    if cancelar:
+                                        trigger1 = False
+                                        trigger2 = False
+                                        cursor.close()
+                                        time.sleep(1)
+                                    elif not cancelar:
+                                        trigger1 = True
+                                        continue
                     if not trigger2:
                         break
             except ValueError:
