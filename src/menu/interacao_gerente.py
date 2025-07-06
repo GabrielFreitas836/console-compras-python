@@ -139,7 +139,7 @@ class Gerente(ConectarBanco):
                             break
                     elif subescolha == 2:
                         self.deletar_pedido()
-                        break
+                        continue
                     
                     elif subescolha == 3:
                         self.limpar_pedidos()
@@ -585,7 +585,7 @@ class Gerente(ConectarBanco):
 
             if self.rows == []:
                 print("Não há pedidos registrados!")
-                continue
+                break
             else:
                 print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
                 print("\n")
