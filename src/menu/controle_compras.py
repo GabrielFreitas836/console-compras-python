@@ -232,6 +232,71 @@ class Compras(ConectarBanco):
                 else:
                     break
     
+    # Função de diminuir a quantidade de um item do carrinho
+    # Essa função considera todas as possibilidades de efeito pós-deleção
+    def diminuir_quantidade(self, idcliente, valorTotal):
+        while True:
+            try:
+                print("=" *50)
+                cursor = self.conn.cursor()
+                cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
+                "FROM itenspedidos it " \
+                "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
+                "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+                "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
+                "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s ORDER BY it.idItens;", (idcliente,))
+
+                self.columms = [desc[0] for desc in cursor.description]
+                self.rows = cursor.fetchall()
+                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                print("\n")
+                diminuir = int(input("Escolha qual produto você quer diminuir a quantidade pelo ID do item: "))
+                qtdDiminuida = int(input("Escolha a quantidade que quer diminuir: "))
+
+                for item, cliente, produto, valorUni, categoria, quantidade, valorTot in self.rows:
+                    if item == diminuir:
+                        cursor.execute("""SELECT it.quantidade FROM itenspedidos it INNER JOIN pedidos p
+                        ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s AND it.idItens = %s;""", (idcliente, diminuir,))
+                        qtdProduto = cursor.fetchone()
+                        if qtdDiminuida < qtdProduto:
+                            qtdProduto -= qtdDiminuida
+                            valorTotal = qtdProduto * valorUni
+                            cursor.execute("UPDATE itenspedidos SET valorTotal = %s, quantidade = %s WHERE idItens = %s;", (valorTotal, qtdProduto, diminuir,))
+                            self.conn.commit()
+                            print("Item atualizado com sucesso!")
+                            return valorTotal, True
+                        elif qtdDiminuida == qtdProduto:
+                            print(f"Já que você quer diminuir {qtdDiminuida} de {qtdProduto} desse produto, seu item será removido!")
+                            cursor.execute("DELETE FROM itenspedidos WHERE idItens = %s;", (diminuir,))
+                            self.conn.commit()
+                            time.sleep(0.2)
+                            print("Item removido com sucesso!")
+                            if self.rows == []:
+                                print("Seu carrinho está vazio agora! Cancelando sua compra...")
+                                time.sleep(0.5)
+                                print("Desativando restrições de chaves estrangeiras temporariamente...")
+                                time.sleep(1.3)
+                                cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+                                print("Removendo pedido e itens...")
+                                time.sleep(1.3)
+                                cursor.execute("DELETE it FROM itenspedidos it INNER JOIN pedidos p ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s;", (idcliente,))
+                                cursor.execute("DELETE FROM pedidos WHERE cliente_idCliente = %s;", (idcliente,))
+                                print("Compra cancelada!")
+                                time.sleep(0.3)
+                                print("Reativando restrições de chaves estrangeiras...")
+                                cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+                                self.conn.commit()
+                                time.sleep(0.3)
+                                print("Retornando ao início...")
+                            return True
+                        elif qtdDiminuida > qtdProduto:
+                            print("Não é possível diminuir uma quantidade maior do que a quantidade comprada! Tente novamente!")
+                            return False
+                if True:
+                    break
+            except ValueError:
+                print("Por favor, digite um valor válido!")
+
     # Função de cancelar a compra
     def cancelar_compra(self, idcliente):
         try:
@@ -375,19 +440,19 @@ class Compras(ConectarBanco):
                             print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
 
                             if remover:
-                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n[4] - Cancelar compra\n")
+                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n[4] - Diminuir quantidade de um produto\n[5] - Cancelar compra\n")
                             elif not remover:
-                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n[4] - Cancelar compra\n")
+                                print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n[4] - Diminuir quantidade de um produto\n[5] - Cancelar compra\n")
 
                             opcoes = int(input("O que deseja fazer agora ? "))
 
                             # Loop while utilizado para caso a opção seja inválida
-                            while opcoes > 4:
+                            while opcoes > 5:
                                 print("Por favor, digite uma opção válida!")
                                 if remover:
-                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n[4] - Cancelar compra\n")
+                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras\n[3] - Remover um item do carrinho\n[4] - Diminuir quantidade de um produto\n[5] - Cancelar compra\n")
                                 elif not remover:
-                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n[4] - Cancelar compra\n")
+                                    print("\n[1] - Comprar mais itens\n[2] - Encerrar as compras", Fore.BLACK + "\n[3] - Remover um item do carrinho", Style.RESET_ALL + "\n[4] - Diminuir quantidade de um produto\n[5] - Cancelar compra\n")
 
                                 opcoes = int(input("O que deseja fazer agora ? "))
                             else:  
@@ -405,6 +470,14 @@ class Compras(ConectarBanco):
                                     remover = self.remover_item(idcliente)
                                     continue
                                 elif opcoes == 4:
+                                    diminuir = self.diminuir_quantidade(idcliente, valorTotal)
+                                    if diminuir and self.rows == []:
+                                        trigger1 = False
+                                        trigger2 = False
+                                    elif diminuir and self.rows != []:
+                                        trigger1 = True
+                                        continue
+                                elif opcoes == 5:
                                     cancelar = self.cancelar_compra(idcliente)
                                     if cancelar:
                                         trigger1 = False
