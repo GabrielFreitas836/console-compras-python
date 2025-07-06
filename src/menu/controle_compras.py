@@ -258,19 +258,31 @@ class Compras(ConectarBanco):
                         cursor.execute("""SELECT it.quantidade FROM itenspedidos it INNER JOIN pedidos p
                         ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s AND it.idItens = %s;""", (idcliente, diminuir,))
                         qtdProduto = cursor.fetchone()
-                        if qtdDiminuida < qtdProduto:
-                            qtdProduto -= qtdDiminuida
-                            valorTotal = qtdProduto * valorUni
-                            cursor.execute("UPDATE itenspedidos SET valorTotal = %s, quantidade = %s WHERE idItens = %s;", (valorTotal, qtdProduto, diminuir,))
+                        if qtdDiminuida < qtdProduto[0]:
+                            qtdMenos = qtdProduto[0] - qtdDiminuida
+                            valorTotal = qtdMenos * valorUni
+                            cursor.execute("UPDATE itenspedidos SET valorTotal = %s, quantidade = %s WHERE idItens = %s;", (valorTotal, qtdMenos, diminuir,))
                             self.conn.commit()
                             print("Item atualizado com sucesso!")
                             return valorTotal, True
-                        elif qtdDiminuida == qtdProduto:
-                            print(f"Já que você quer diminuir {qtdDiminuida} de {qtdProduto} desse produto, seu item será removido!")
+                        elif qtdDiminuida == qtdProduto[0]:
+                            print(f"Já que você quer diminuir {qtdDiminuida} de {qtdProduto[0]} desse produto, seu item será removido!")
+                            cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+                            cursor.execute("DELETE p FROM pedidos p INNER JOIN itenspedidos it ON it.pedido_idPedido = p.idPedido WHERE it.idItens = %s;", (diminuir,))
                             cursor.execute("DELETE FROM itenspedidos WHERE idItens = %s;", (diminuir,))
+                            cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
                             self.conn.commit()
                             time.sleep(0.2)
                             print("Item removido com sucesso!")
+
+                            cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
+                            "FROM itenspedidos it " \
+                            "INNER JOIN pedidos p ON p.idPedido = it.pedido_idPedido " \
+                            "INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
+                            "INNER JOIN produtos pr ON pr.idProduto = it.produto_idProduto " \
+                            "INNER JOIN categorias ca ON pr.categoria_idCategoria = ca.idCategoria WHERE cl.idCliente = %s ORDER BY it.idItens;", (idcliente,))
+                            self.rows = cursor.fetchall()
+
                             if self.rows == []:
                                 print("Seu carrinho está vazio agora! Cancelando sua compra...")
                                 time.sleep(0.5)
@@ -289,9 +301,12 @@ class Compras(ConectarBanco):
                                 time.sleep(0.3)
                                 print("Retornando ao início...")
                             return True
-                        elif qtdDiminuida > qtdProduto:
+                        elif qtdDiminuida > qtdProduto[0]:
                             print("Não é possível diminuir uma quantidade maior do que a quantidade comprada! Tente novamente!")
                             return False
+                if item != diminuir:
+                    print("Esse ID não corresponde a algum dos itens registrados no carrinho atualmente! Tente novamente!")
+                    continue
                 if True:
                     break
             except ValueError:
