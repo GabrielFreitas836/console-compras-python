@@ -36,8 +36,6 @@ limpas totalmente pelo usuário como gerente
   - Deletar itens de pedidos já registrados;
     
   - Limpeza total da tabela de clientes, produtos e itenspedidos;
-    
-  - Consultar o saldo diário (com base nas compras realizadas pelos clientes).
 
 ---
 ## 🗄️ Conexão com MySQL
