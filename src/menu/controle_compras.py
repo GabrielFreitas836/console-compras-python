@@ -77,13 +77,13 @@ class Compras(ConectarBanco):
 
                 if forma_pagamento == 1:
                     print("Pagando em dinheiro...")
-                    time.sleep(0.8)
+                    time.sleep(0.7)
                     print(f"R$ {total:.2f} pago com sucesso!")
                     self.atualizar_pagamento(forma_pagamento, idcliente)
                     break
                 elif forma_pagamento == 2:
                     print("Pagando em pix...")
-                    time.sleep(0.8)
+                    time.sleep(0.7)
                     print(f"R$ {total:.2f} pago com sucesso!")
                     self.atualizar_pagamento(forma_pagamento, idcliente)
                     break
@@ -111,7 +111,7 @@ class Compras(ConectarBanco):
 
                 if metodo == 1:
                     print("Pagando com cartão no débito...")
-                    time.sleep(0.8)
+                    time.sleep(0.7)
                     print(f"R$ {total:.2f} pago com sucesso!")
                     break
                 elif metodo == 2:
@@ -237,7 +237,7 @@ class Compras(ConectarBanco):
     def diminuir_quantidade(self, idcliente, valorTotal):
         while True:
             try:
-                print("=" *50)
+                print("=" *50, "\n")
                 cursor = self.conn.cursor()
                 cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
                 "FROM itenspedidos it " \
@@ -272,7 +272,7 @@ class Compras(ConectarBanco):
                             cursor.execute("DELETE FROM itenspedidos WHERE idItens = %s;", (diminuir,))
                             cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
                             self.conn.commit()
-                            time.sleep(0.2)
+                            time.sleep(0.3)
                             print("Item removido com sucesso!")
 
                             cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
@@ -287,18 +287,18 @@ class Compras(ConectarBanco):
                                 print("Seu carrinho está vazio agora! Cancelando sua compra...")
                                 time.sleep(0.5)
                                 print("Desativando restrições de chaves estrangeiras temporariamente...")
-                                time.sleep(1.3)
+                                time.sleep(1)
                                 cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
                                 print("Removendo pedido e itens...")
-                                time.sleep(1.3)
+                                time.sleep(1)
                                 cursor.execute("DELETE it FROM itenspedidos it INNER JOIN pedidos p ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s;", (idcliente,))
                                 cursor.execute("DELETE FROM pedidos WHERE cliente_idCliente = %s;", (idcliente,))
                                 print("Compra cancelada!")
-                                time.sleep(0.3)
+                                time.sleep(0.4)
                                 print("Reativando restrições de chaves estrangeiras...")
                                 cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
                                 self.conn.commit()
-                                time.sleep(0.3)
+                                time.sleep(0.4)
                                 print("Retornando ao início...")
                             return True
                         elif qtdDiminuida > qtdProduto[0]:
@@ -324,18 +324,18 @@ class Compras(ConectarBanco):
             elif cancelar == 1:
                 cursor = self.conn.cursor()
                 print("Desativando restrições de chaves estrangeiras temporariamente...")
-                time.sleep(1.3)
+                time.sleep(1)
                 cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
                 print("Removendo pedido e itens...")
-                time.sleep(1.3)
+                time.sleep(1)
                 cursor.execute("DELETE it FROM itenspedidos it INNER JOIN pedidos p ON it.pedido_idPedido = p.idPedido WHERE p.cliente_idCliente = %s;", (idcliente,))
                 cursor.execute("DELETE FROM pedidos WHERE cliente_idCliente = %s;", (idcliente,))
                 print("Compra cancelada!")
-                time.sleep(0.3)
+                time.sleep(0.4)
                 print("Reativando restrições de chaves estrangeiras...")
                 cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
                 self.conn.commit()
-                time.sleep(0.3)
+                time.sleep(0.4)
                 print("Retornando ao início...")
                 return True
         except ValueError:
@@ -420,7 +420,7 @@ class Compras(ConectarBanco):
                             self.conn.commit()
                             print("Item salvo com sucesso!")
                             time.sleep(0.3)
-                            print("=" *50)
+                            print("=" *50, "\n")
                         else:
                             for cliente, produto, total in self.rows:
                                 if total >= 1 and produto == escolhaProduto:
@@ -428,14 +428,14 @@ class Compras(ConectarBanco):
                                     self.conn.commit()
                                     print("Item atualizado com sucesso!")
                                     time.sleep(0.3)
-                                    print("=" *50)
+                                    print("=" *50, "\n")
                                 elif total >= 1 and produto != escolhaProduto:
                                     cursor.execute("INSERT INTO itenspedidos (quantidade, pedido_idPedido, produto_idProduto, valorTotal) VALUES (%s, %s, %s, %s)", (qtdExtra, idpedido[0], escolhaProduto, valorTotal,))
                                     cursor.execute("UPDATE itenspedidos SET quantidade = %s, valorTotal = %s WHERE produto_idProduto = %s;", (qtdExtra, valorTotal, escolhaProduto,))
                                     self.conn.commit()
                                     print("Item salvo e atualizado com sucesso!")
                                     time.sleep(0.3)
-                                    print("=" *50)
+                                    print("=" *50, "\n")
                         while trigger1:
                             cursor.execute("SELECT it.idItens, cl.nome AS cliente, pr.descricao AS produto, pr.valorUnitario, ca.descricao AS categoria, it.quantidade, it.valorTotal " \
                             "FROM itenspedidos it " \

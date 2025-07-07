@@ -39,7 +39,7 @@ class Menu:
                 time.sleep(0.7)
                 if self.cliente.rows == []:
                     print("=" *50)
-                    print("\n [1] - sim\n [2] - não\n")
+                    print("\n[1] - sim\n[2] - não\n")
                     continuarRegistro = self.cliente.registrar_cliente()
 
                     if not continuarRegistro:
@@ -49,7 +49,7 @@ class Menu:
                 else:
                     print(tabulate(self.cliente.rows, headers=self.cliente.columms, tablefmt="grid"))
                     time.sleep(0.7)    
-                    print("\n [1] - sim\n [2] - não\n")
+                    print("\n[1] - sim\n[2] - não\n")
                     continuarRegistro = self.cliente.registrar_cliente()
                     if not continuarRegistro:
                         self.cliente.fechar_conexao()

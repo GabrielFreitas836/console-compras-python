@@ -35,7 +35,6 @@ class Gerente(ConectarBanco):
                         print("\n[1] - Adicionar um novo cliente", Fore.BLACK + "\n[2] - Alterar dados de um cliente existente" + Style.RESET_ALL, Fore.BLACK + "\n[3] - Deletar um cliente existente" + Style.RESET_ALL, "\n[4] - Mostrar tabela de clientes\n[5] - Limpar tabela de clientes\n")
 
                     subescolha = int(input("O que você gostaria de fazer ? "))
-                    print("=" *50)
 
                     if subescolha == 1:
                         self.adicionar_cliente()
@@ -79,7 +78,6 @@ class Gerente(ConectarBanco):
                         print("\n[1] - Adicionar um novo produto", Fore.BLACK + "\n[2] - Alterar dados de um produto existente" + Style.RESET_ALL, Fore.BLACK + "\n[3] - Deletar um produto existente" + Style.RESET_ALL, "\n[4] - Mostrar tabela de produtos\n[5] - Limpar tabela de produtos\n")
 
                     subescolha = int(input("O que você gostaria de fazer ? "))
-                    print("=" *50)
 
                     if subescolha == 1:
                         self.adicionar_produto()
@@ -118,7 +116,6 @@ class Gerente(ConectarBanco):
                     print("=" *50)
                     print("\n[1] - Mostrar tabela de pedidos\n[2] - Deletar pedido existente\n[3] - Limpar tabela de pedidos\n")
                     subescolha = int(input("O que você gostaria de fazer ? "))
-                    print("=" *50)
 
                     if subescolha == 1:
                         time.sleep(1)
@@ -151,8 +148,7 @@ class Gerente(ConectarBanco):
                         continue
 
                 case _:
-                    print("=" *50)
-                    print("\n")
+                    print("=" *50, "\n")
                     print("Escolha uma das opções disponíveis: ")
                     continue
     
@@ -608,54 +604,54 @@ class Gerente(ConectarBanco):
 
     # Função de limpeza total da tabela clientes
     def limpar_clientes(self):
-        time.sleep(1)
+        time.sleep(0.7)
         cursor = self.conn.cursor()
         print("Desativando restrições de chaves estrangeiras temporariamente...")
-        time.sleep(1.3)
+        time.sleep(1)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
         print("Limpando a tabela clientes...")
-        time.sleep(1.3)
+        time.sleep(1)
         cursor.execute("TRUNCATE TABLE clientes;")
         print("Tabela clientes limpa com sucesso!")
         time.sleep(0.5)
         print("Reativando restrições de chaves estrangeiras...")
-        time.sleep(0.8)
+        time.sleep(0.6)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
         cursor.close()
 
     # Função de limpeza total da tabela produtos
     def limpar_produtos(self):
-        time.sleep(1)
+        time.sleep(0.7)
         cursor = self.conn.cursor()
         print("Desativando restrições de chaves estrangeiras temporariamente...")
-        time.sleep(1.3)
+        time.sleep(1)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
         print("Limpando a tabela produtos...")
-        time.sleep(1.3)
+        time.sleep(1)
         cursor.execute("TRUNCATE TABLE produtos;")
         print("Tabela produtos limpa com sucesso!")
         time.sleep(0.5)
         print("Reativando restrições de chaves estrangeiras...")
-        time.sleep(0.8)
+        time.sleep(0.6)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
         self.conn.commit()
         cursor.close()
 
     # Função de limpeza total da tabela pedidos
     def limpar_pedidos(self):
-        time.sleep(1)
+        time.sleep(0.7)
         cursor = self.conn.cursor()
         print("Desativando restrições de chaves estrangeiras temporariamente...")
-        time.sleep(1.3)
+        time.sleep(1)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
         print("Limpando a tabelas pedidos...")
-        time.sleep(1.3)
+        time.sleep(1)
         cursor.execute("TRUNCATE TABLE pedidos;")
         print("Tabela pedidos limpa com sucesso!")
         time.sleep(0.5)
         print("Reativando restrições de chaves estrangeiras...")
-        time.sleep(0.8)
+        time.sleep(0.6)
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
         cursor.close()
