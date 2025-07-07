@@ -62,9 +62,12 @@ class Menu:
             elif entidade == 2:
                 time.sleep(0.2)
                 print("=" *50)
-                self.gerente.opcoes_gerente()
-                self.gerente.fechar_conexao()
-                break
+                inicio = self.gerente.opcoes_gerente()
+                if inicio:
+                    continue
+                else:
+                    self.gerente.fechar_conexao()
+                    break
             else:
                 print("Por favor, digite [1] se for cliente ou [2] se for gerente")
                 time.sleep(0.8)

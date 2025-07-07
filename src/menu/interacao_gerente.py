@@ -21,7 +21,7 @@ class Gerente(ConectarBanco):
     def opcoes_gerente(self):
         while True:
             print("Bem-vindo, gerente!")
-            print("\n[1] - Clientes\n[2] - Produtos\n[3] - Itens e Pedidos\n")
+            print("\n[1] - Clientes\n[2] - Produtos\n[3] - Itens e Pedidos\n[4] - Voltar para o Menu Inicial\n")
             escolha = int(input("Em qual categoria gostaria de mexer ? "))
 
             match escolha:
@@ -147,7 +147,30 @@ class Gerente(ConectarBanco):
                         print("Opção inválida! Retornando ao início...")
                         time.sleep(0.5)
                         continue
-
+                
+                case 4:
+                    while True:
+                        time.sleep(0.3)
+                        print("=" *50)
+                        print("\n[1] - Sim\n[2] - Não\n")
+                        escolha = int(input("Você realmente deseja voltar para o Menu Inicial ? "))
+                        
+                        if escolha == 2:
+                            continuar = False
+                        elif escolha == 1:
+                            print("Retornando ao início...")
+                            time.sleep(0.5)
+                            continuar = False
+                            return True
+                        else:
+                            print("Opção inválida! Tente novamente!")
+                            continuar = True
+                        
+                        if continuar:
+                            continue
+                        else:
+                            print("=" *50, "\n")
+                            break
                 case _:
                     print("=" *50, "\n")
                     print("Escolha uma das opções disponíveis: ")
