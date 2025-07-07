@@ -6,10 +6,15 @@
 
 """
 
+# Importando a classe ConectarBanco de conectar_banco.py
 from config.conectar_banco import ConectarBanco
+# Importando as classes Cliente e Gerente de interacao_cliente.py e interacao_gerente.py
 from menu.interacao_cliente import Cliente
 from menu.interacao_gerente import Gerente
+# Biblioteca usada para formatar os resultados das consultas SQL
 from tabulate import tabulate
+# Biblioteca usada para criar pausas na execução , útil para simular procesamento ou melhorar a visualização
+# Utilização com time.sleep
 import time
 
 class Menu:

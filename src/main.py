@@ -5,10 +5,13 @@
     descrição: arquivo principal para execução do programa
 """
 
-# Importando a classe interacao_principal.py
+# Importando a classe Menu de interacao_principal.py
 from menu.interacao_principal import Menu
+# Importando a biblioteca de conexão com o MySQL
 import mysql.connector
+# Importando dotenv para manter os dados de conexão do banco seguros
 from dotenv import load_dotenv
+# Importando módulo necessário para acessar as variáveis de ambiente carregadas pelo dotenv
 import os
 
 if __name__ == "__main__":
@@ -22,6 +25,8 @@ if __name__ == "__main__":
         'database': os.getenv("DB_DATABASE")
     }
 
+    # Execução da função principal do programa que roda todas asoutras funções necessárias para seu funcionamento completo
+    # Uso de try/except para interromper a execução caso aconteca algum erro
     try:
         m.menu(bd_config)
     except mysql.connector.Error as error:

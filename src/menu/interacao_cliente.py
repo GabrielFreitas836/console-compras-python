@@ -6,9 +6,14 @@
 
 """
 
+# Importando a classe ConectarBanco de conectar_banco.py
 from config.conectar_banco import ConectarBanco
+# Importando a classe Compras de controle_compras.py
 from menu.controle_compras import Compras
+# Biblioteca usada para formatar os resultados das consultas SQL
 from tabulate import tabulate
+# Biblioteca usada para criar pausas na execução , útil para simular procesamento ou melhorar a visualização
+# Utilização com time.sleep
 import time
 
 # Função inicializadora da classe + init da classe ConectarBanco
