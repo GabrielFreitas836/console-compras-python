@@ -20,6 +20,7 @@ class Gerente(ConectarBanco):
     # Função principal que gerencia as opções do gerente
     def opcoes_gerente(self):
         while True:
+            print("Bem-vindo, gerente!")
             print("\n[1] - Clientes\n[2] - Produtos\n[3] - Itens e Pedidos\n")
             escolha = int(input("Em qual categoria gostaria de mexer ? "))
 
@@ -38,13 +39,13 @@ class Gerente(ConectarBanco):
 
                     if subescolha == 1:
                         self.adicionar_cliente()
-                        break
+                        continue
                     elif subescolha == 2:
                         self.atualizar_cliente()
-                        break
+                        continue
                     elif subescolha == 3:
                         self.deletar_cliente()
-                        break
+                        continue
                     elif subescolha == 4:
                         time.sleep(1)
                         print("\n")
@@ -62,7 +63,7 @@ class Gerente(ConectarBanco):
 
                     elif subescolha == 5:
                         self.limpar_clientes()
-                        break
+                        continue
                     else:
                         print("Opção inválida! Retornando ao início...")
                         time.sleep(0.5)
@@ -81,13 +82,13 @@ class Gerente(ConectarBanco):
 
                     if subescolha == 1:
                         self.adicionar_produto()
-                        break
+                        continue
                     elif subescolha == 2:
                         self.atualizar_produtos()
-                        break
+                        continue
                     elif subescolha == 3:
                         self.deletar_produto()
-                        break
+                        continue
                     elif subescolha == 4:
                         time.sleep(1)
                         print("\n")
@@ -105,7 +106,7 @@ class Gerente(ConectarBanco):
                             break
                     elif subescolha == 5:
                         self.limpar_produtos()
-                        break
+                        continue
                     else:
                         print("Opção inválida! Retornando ao início...")
                         time.sleep(0.5)
@@ -140,7 +141,7 @@ class Gerente(ConectarBanco):
                     
                     elif subescolha == 3:
                         self.limpar_pedidos()
-                        break
+                        continue
 
                     else:
                         print("Opção inválida! Retornando ao início...")
@@ -189,6 +190,7 @@ class Gerente(ConectarBanco):
                     continue
                 elif escolha == 2:
                     cursor.close()
+                    print("=" *50, "\n")
                     break
                 else:
                     print("Opção inválida! Tente novamente!")
@@ -224,6 +226,7 @@ class Gerente(ConectarBanco):
                     continue
                 elif escolha == 2:
                     cursor.close()
+                    print("=" *50, "\n")
                     break
                 else:
                     print("Opção inválida! Tente novamente!")
@@ -245,6 +248,7 @@ class Gerente(ConectarBanco):
                     print("Opção inválida, pois não há clientes registrados!")
                     time.sleep(0.4)
                     print("Adicione um cliente primeiro!")
+                    print("=" *50, "\n")
                     break
                 else:
                     time.sleep(0.7)
@@ -269,6 +273,7 @@ class Gerente(ConectarBanco):
                                 self.conn.commit()
                                 nome = novoNome
                                 print("Cliente teve seu nome alterado com sucesso!")
+                                print("=" *50, "\n")
                                 break
 
                         if nome != novoNome:
@@ -296,6 +301,7 @@ class Gerente(ConectarBanco):
                                 self.conn.commit()
                                 idade = novaIdade
                                 print("Cliente teve sua idade alterada com sucesso!")
+                                print("=" *50, "\n")
                                 break
 
                         if idade != novaIdade:
@@ -325,6 +331,7 @@ class Gerente(ConectarBanco):
                                 nome = novoNome
                                 idade = novaIdade
                                 print("Cliente teve seu nome e idade alterados com sucesso!")
+                                print("=" *50, "\n")
                                 break
                             
                         if nome != novoNome and idade != novaIdade:
@@ -354,10 +361,11 @@ class Gerente(ConectarBanco):
                     print("Opção inválida, pois não há produtos registrados!")
                     time.sleep(0.4)
                     print("Adicione um produto primeiro!")
+                    print("=" *50, "\n")
                     break
                 else:
                     time.sleep(0.7)
-                    print("\n[1] - Alterar somente descrição do produto\n[2] - Alterar somente o valor unitário do produto\n[3] - Alterar somente a categoria do produto\n[4] - Alterar todos os dados do produto")
+                    print("\n[1] - Alterar somente descrição do produto\n[2] - Alterar somente o valor unitário do produto\n[3] - Alterar somente a categoria do produto\n[4] - Alterar todos os dados do produto\n")
                     escolha = int(input("Escolha uma das opções acima: "))
             
                     if escolha == 1:
@@ -378,6 +386,7 @@ class Gerente(ConectarBanco):
                                 self.conn.commit()
                                 id = idProduto
                                 print("Produto alterado com sucesso!")
+                                print("=" *50, "\n")
                                 break
                             
                         if id != idProduto:
@@ -405,6 +414,7 @@ class Gerente(ConectarBanco):
                                 self.conn.commit()
                                 id = idProduto
                                 print("Valor unitário alterado com sucesso!")
+                                print("=" *50, "\n")
                                 break
 
                         if id != idProduto:
@@ -432,6 +442,7 @@ class Gerente(ConectarBanco):
                                 self.conn.commit()
                                 idproduto = idProduto
                                 print("Categoria alterada com sucesso!")
+                                print("=" *50, "\n")
                                 break
                             
                         if idproduto != idProduto:
@@ -464,6 +475,8 @@ class Gerente(ConectarBanco):
                                 valor = novoValor
                                 idcategoria = novaCategoria
                                 print("Todos os dados do produto foram alterados com sucesso!")
+                                print("=" *50, "\n")
+                                break
 
                         if idproduto != idProduto and produto != novaDescricao and valor != novoValor and idcategoria != novaCategoria:
                             print("Produto não encontrado! Tente novamente!")
@@ -489,6 +502,7 @@ class Gerente(ConectarBanco):
                 print("Opção inválida, pois não há clientes registrados!")
                 time.sleep(0.4)
                 print("Adicione um cliente primeiro!")
+                print("=" *50, "\n")
                 break
             else:
                 time.sleep(0.7)
@@ -510,6 +524,8 @@ class Gerente(ConectarBanco):
                             id = clienteDeletado
                             print(f"Cliente {nome} deletado com sucesso!")
                             cursor.execute("ALTER TABLE clientes AUTO_INCREMENT = %s;", (clienteDeletado,))
+                            self.conn.commit()
+                            print("=" *50, "\n")
                             break
 
                     if id != clienteDeletado:
@@ -534,6 +550,7 @@ class Gerente(ConectarBanco):
                 print("Opção inválida, pois não há produtos registrados!")
                 time.sleep(0.4)
                 print("Adicione um produto primeiro!")
+                print("=" *50, "\n")
                 break
             else:
                 time.sleep(0.7)
@@ -557,6 +574,7 @@ class Gerente(ConectarBanco):
                             print("Produto deletado com sucesso!")
                             cursor.execute("ALTER TABLE produtos AUTO_INCREMENT = %s;", (produtoDeletado,))
                             self.conn.commit()
+                            print("=" *50, "\n")
                             break
                     
                     if id != produtoDeletado:
@@ -581,6 +599,7 @@ class Gerente(ConectarBanco):
 
             if self.rows == []:
                 print("Não há pedidos registrados!")
+                print("=" *50, "\n")
                 break
             else:
                 print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
@@ -593,6 +612,8 @@ class Gerente(ConectarBanco):
                         id = pedidoDeletado
                         print("Pedido deletado com sucesso!")
                         cursor.execute("ALTER TABLE pedidos AUTO_INCREMENT = %s;", (pedidoDeletado,))
+                        self.conn.commit()
+                        print("=" *50, "\n")
                         break
 
                 if id != pedidoDeletado:
@@ -619,6 +640,7 @@ class Gerente(ConectarBanco):
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
         cursor.close()
+        print("=" *50, "\n")
 
     # Função de limpeza total da tabela produtos
     def limpar_produtos(self):
@@ -637,6 +659,7 @@ class Gerente(ConectarBanco):
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
         self.conn.commit()
         cursor.close()
+        print("=" *50, "\n")
 
     # Função de limpeza total da tabela pedidos
     def limpar_pedidos(self):
@@ -655,4 +678,5 @@ class Gerente(ConectarBanco):
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
         self.conn.commit()
         cursor.close()
+        print("=" *50, "\n")
       

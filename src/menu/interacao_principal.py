@@ -62,7 +62,6 @@ class Menu:
             elif entidade == 2:
                 time.sleep(0.2)
                 print("=" *50)
-                print("Bem-vindo, gerente!")
                 self.gerente.opcoes_gerente()
                 self.gerente.fechar_conexao()
                 break
