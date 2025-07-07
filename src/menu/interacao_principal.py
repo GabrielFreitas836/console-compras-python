@@ -28,10 +28,10 @@ class Menu:
             self.bd_config = bd_config
             self.cliente = Cliente(conn = banco.conn)
             self.gerente = Gerente(conn = banco.conn)
-            print("=" *50)
+            print("=" *60)
             print("Olá! Seja bem-vindo(a) ao sistema de gerenciamento!")
-            print("\n [1] - cliente\n [2] - gerente\n")
-            entidade = int(input("Você é cliente ou gerente ? Aperte 1 ou 2 "))
+            print("\n[1] - cliente\n[2] - gerente\n[3] - Fechar o programa\n")
+            entidade = int(input("Você é cliente ou gerente ? Aperte 1,2 ou 3 se for fechar o programa "))
             if entidade == 1:
                 time.sleep(0.2)
                 print("Carregando lista de clientes...")
@@ -68,6 +68,11 @@ class Menu:
                 else:
                     self.gerente.fechar_conexao()
                     break
+            elif entidade == 3:
+                print("Fechando o programa...")
+                time.sleep(0.5)
+                banco.fechar_conexao()
+                break
             else:
                 print("Por favor, digite [1] se for cliente ou [2] se for gerente")
                 time.sleep(0.8)
