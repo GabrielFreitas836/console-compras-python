@@ -1,6 +1,10 @@
 # 📄 Script SQL
-## Nessa pasta denominada 'dados' você encontrará o script feito em MySQL para criar o banco, garantir seu uso e criar todas as tabelas necessárias para execução do programa.
+## Nessa pasta denominada 'dados' você encontrará o script feito em MySQL para criar o banco, garantir seu uso e criar todas as tabelas necessárias para execução do programa. Além disso, há também o modelo lógico feito em MySQL Workbench (interface gráfica de um banco MySQL)
 
+### Modelo lógico
+
+![Modelo lógico do banco sistema_mercado](logicoMercado.png)
+---
 ### Aqui vai um overview de alguns comandos em SQL e suas funcionalidades:
   - `CREATE DATABASE IF NOT EXISTS nome_do_banco;`
   
