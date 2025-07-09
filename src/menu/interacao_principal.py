@@ -35,7 +35,7 @@ class Menu:
             self.gerente = Gerente(conn = banco.conn)
             print("=" *60)
             print("Olá! Seja bem-vindo(a) ao sistema de gerenciamento!")
-            print("\n[1] - cliente\n[2] - gerente\n[3] - Fechar o programa\n")
+            print("\n[1] - Cliente\n[2] - Gerente\n[3] - Fechar o programa\n")
             entidade = int(input("Você é cliente ou gerente ? Aperte 1,2 ou 3 se for fechar o programa "))
             if entidade == 1:
                 time.sleep(0.2)
