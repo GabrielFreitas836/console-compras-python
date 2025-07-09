@@ -79,7 +79,7 @@ class Menu:
                 banco.fechar_conexao()
                 break
             else:
-                print("Por favor, digite [1] se for cliente ou [2] se for gerente")
+                print("Por favor, digite [1] se for cliente, [2] se for gerente ou [3] se for sair do programa")
                 time.sleep(0.8)
                 print("Retornando ao início...")
                 time.sleep(1)
