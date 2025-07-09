@@ -179,12 +179,24 @@ class Compras(ConectarBanco):
                         if escolha == n and escolha != 1:
                             print(f"Pagando {n} parcelas de R${m:.2f} ...")
                             time.sleep(0.5)
+                            continuar = False
                             break
                         elif escolha == 1:
                             print(f"Pagando R${m:.2f} à vista no cartão...")
                             time.sleep(0.5)
+                            continuar = False
                             break
-                    break
+                        elif escolha == 0:
+                            print("Número de parcelas não pode ser nulo! Escolha uma opção válida!")
+                            continuar = True
+                            break
+                    if escolha > n:
+                        print("Número de parcelas não pode ser maior que a quantidade gerada! Tente novamente")
+                        continuar = True
+                    if continuar:
+                        continue
+                    else:
+                        break
                 else:
                     print("Por favor, selecione [1] para débito ou [2] para parcelamento no crédito!")
                     continue
