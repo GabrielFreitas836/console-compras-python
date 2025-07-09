@@ -34,16 +34,21 @@ class Compras(ConectarBanco):
                 FROM produtos p JOIN categorias c ON p.categoria_idCategoria = c.idCategoria WHERE c.idCategoria = %s ORDER BY p.idProduto;""", (categoriaEscolhida,))
                 self.columms = [desc[0] for desc in cursor.description]
                 self.rows = cursor.fetchall()
-                print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
-                print("\n[1] - Sim\n[2] - Não\n")
-                trocarCategoria = int(input("Deseja ver outra categoria ? "))
-                if trocarCategoria == 1:
+
+                if self.rows == []:
+                    print("Categoria inválida! Escolha uma das opções válidas!")
                     continue
-                elif trocarCategoria == 2:
-                    return categoriaEscolhida
                 else:
-                    print("Opção inválida! Tente novamente!")
-                    continue
+                    print(tabulate(self.rows, headers=self.columms, tablefmt="grid"))
+                    print("\n[1] - Sim\n[2] - Não\n")
+                    trocarCategoria = int(input("Deseja ver outra categoria ? "))
+                    if trocarCategoria == 1:
+                        continue
+                    elif trocarCategoria == 2:
+                        return categoriaEscolhida
+                    else:
+                        print("Opção inválida! Tente novamente!")
+                        continue
             except ValueError:
                 print("Por favor, digite um valor válido!")
                 continue
@@ -348,7 +353,6 @@ class Compras(ConectarBanco):
 
     # Função de adicionar produtos ao 'itenspedidos'
     def adicionar_ao_carrinho(self, idcliente):
-        print("\n")
         categoriaEscolhida = 0
         valorTotal = 0.0
         qtdExtra = 0
