@@ -101,7 +101,7 @@ class Compras(ConectarBanco):
                     self.atualizar_pagamento(forma_pagamento, idcliente)
                     break
                 else:
-                    print("Por favor, selecione [1] para dinheiro ou [2] para pix ou [3] para métodos de cartão")
+                    print("Por favor, selecione [1] para dinheiro, [2] para pix ou [3] para métodos de cartão")
                     continue
             except ValueError:
                 print("Por favor, digite um valor válido!")
