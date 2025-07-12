@@ -522,7 +522,7 @@ class Gerente(ConectarBanco):
         while True:
 
             cursor = self.conn.cursor()
-            cursor.execute("SET FORTEIGN_KEY_CHECKS = 0;")
+            cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
             cursor.execute("SELECT * FROM clientes;")
             self.rows = cursor.fetchall()
 
@@ -553,7 +553,7 @@ class Gerente(ConectarBanco):
                             print(f"Cliente {nome} deletado com sucesso!")
                             cursor.execute("ALTER TABLE clientes AUTO_INCREMENT = %s;", (clienteDeletado,))
                             self.conn.commit()
-                            cursor.execute("SET FORTEIGN_KEY_CHECKS = 1;")
+                            cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
                             print("=" *50, "\n")
                             break
 
@@ -572,7 +572,7 @@ class Gerente(ConectarBanco):
         while True:
 
             cursor = self.conn.cursor()
-            cursor.execute("SET FORTEIGN_KEY_CHECKS = 0;")
+            cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
             cursor.execute("SELECT * FROM produtos;")
             self.rows = cursor.fetchall()
 
@@ -604,7 +604,7 @@ class Gerente(ConectarBanco):
                             print("Produto deletado com sucesso!")
                             cursor.execute("ALTER TABLE produtos AUTO_INCREMENT = %s;", (produtoDeletado,))
                             self.conn.commit()
-                            cursor.execute("SET FORTEIGN_KEY_CHECKS = 1;")
+                            cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
                             print("=" *50, "\n")
                             break
                     
@@ -621,7 +621,7 @@ class Gerente(ConectarBanco):
         while True:
             time.sleep(1)
             cursor = self.conn.cursor()
-            cursor.execute("SET FORTEIGN_KEY_CHECKS = 0;")
+            cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
             cursor.execute("SELECT p.idPedido, cl.nome AS cliente, it.quantidade, pr.descricao AS produto, pr.valorUnitario, it.valorTotal, pa.descricao AS formaPagamento FROM pedidos p INNER JOIN clientes cl ON p.cliente_idCliente = cl.idCliente " \
             "INNER JOIN itenspedidos it ON it.pedido_idPedido = p.idPedido " \
             "INNER JOIN produtos pr ON it.produto_idProduto = pr.idProduto " \
@@ -645,7 +645,7 @@ class Gerente(ConectarBanco):
                         print("Pedido deletado com sucesso!")
                         cursor.execute("ALTER TABLE pedidos AUTO_INCREMENT = %s;", (pedidoDeletado,))
                         self.conn.commit()
-                        cursor.execute("SET FORTEIGN_KEY_CHECKS = 1;")
+                        cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
                         print("=" *50, "\n")
                         break
 
