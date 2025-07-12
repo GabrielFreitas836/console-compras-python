@@ -1,7 +1,30 @@
 # 📦 Sobre o projeto
 
 ### Console de gerenciamento de compras feito em Visual Studio Code.
+----
+## ▶️ Como executar rapidamente
 
+1. Clone este repositório:
+```
+git clone https://github.com/seu-usuario/console-compras-python.git
+```
+2. Navegue até o diretório src:
+```
+cd console-compras-python/src
+```
+3. Crie um arquivo .env com as credenciais do seu banco.
+  - Exemplo:
+    ```
+    DB_HOST = localhost
+    DB_USER = seu_usuario
+    DB_PASSWORD = sua_senha
+    DB_DATABASE = nome_do_banco
+    ```
+4. Execute:
+```
+python main.py
+```
+----
 A aplicação simula o gerenciamento de compras e estoque de um supermercado. Ao iniciar o programa, você terá a opção de prosseguir como cliente ou gerente.
 
 Seguindo o caminho como cliente, você poderá simular a escolha de um ou mais produtos, encerrar as compras e realizar o pagamento com algumas outras opções no meio do caminho.
@@ -92,7 +115,7 @@ O código acima define uma classe chamada ConectarBanco, responsável por gerenc
  - Inicialização da classe (__init__)
    - Ao instanciar a classe, a conexão (self.conn) é inicialmente definida como None.
 
- - Método conectar_ao_banco
+ - Método conectar_ao_banco(bd_config)
 
    - Estabelece uma conexão com o banco MySQL usando as configurações fornecidas (usuário, senha, host, banco de dados, etc.).
 
@@ -100,7 +123,7 @@ O código acima define uma classe chamada ConectarBanco, responsável por gerenc
 
    - Retorna o objeto de conexão (self.conn) para ser reutilizado em outras partes do código.
 
- - Método fechar_conexao
+ - Método fechar_conexao(self)
 
    - Fecha a conexão com o banco caso ela esteja ativa.
 
@@ -127,7 +150,7 @@ O código acima define uma classe chamada ConectarBanco, responsável por gerenc
  - 🔸 __init__(self)
    - Instancia objetos Cliente e Gerente. Isso prepara a aplicação para lidar com ambos os tipos de usuários.
 
- - 🔸 menu
+ - 🔸 menu(bd_config)
    - Essa é a função principal da aplicação, chamada para iniciar o sistema. Aqui estão os passos principais:
 
    - Conexão com o banco de dados
@@ -180,37 +203,37 @@ O código acima define uma classe chamada ConectarBanco, responsável por gerenc
  A classe Gerente reúne todas as ações administrativas do sistema. Através de um menu interativo, o gerente pode gerenciar clientes, produtos e pedidos diretamente no banco de dados.
 
  - 📋 Menu Principal
-   - opcoes_gerente
+   - opcoes_gerente()
      - Exibe o menu principal com todas as opções disponíveis para o gerente. A partir dele, o usuário pode acessar e executar as funções administrativas do sistema.
 
  - 📌 Validações e Verificações
-   - verificar_tabelas
+   - verificar_tabelas(tabela)
      - Verifica se uma tabela possui registros antes de realizar ações. Aceita apenas tabelas específicas: clientes, produtos, itens e pedidos.
 
  - ➕ Adição de Registros
-   - adicionar_cliente
+   - adicionar_cliente()
      - Cadastra um novo cliente, solicitando informações como nome e idade
 
-   - adicionar_produto
+   - adicionar_produto()
      - Insere um novo produto no catálogo, com nome, valor unitário e categoria
 
  - ✏️ Atualização de Registros
-   - atualizar_cliente
+   - atualizar_cliente()
      - Permite editar os dados de um cliente existente a partir do seu ID
      - Pode-se editar apenas o nome ou a idade ou os dois juntos
 
-   - atualizar_produto
+   - atualizar_produto()
      - Edita as informações de um produto já registrado
      - Pode-se editar as informações individualmente ou todas juntas
 
  - ❌ Remoção de Registros
-    - deletar_cliente
+    - deletar_cliente()
       - Exclui um cliente com base em seu ID.
 
-    - deletar_produto
+    - deletar_produto()
       - Remove um produto específico informado pelo ID.
 
-    - deletar_pedido
+    - deletar_pedido()
       - Apaga um pedido existente do banco de dados.
 
  - 🧹 Limpeza Total de Tabelas
@@ -241,7 +264,7 @@ O código acima define uma classe chamada ConectarBanco, responsável por gerenc
 
         - Cria também uma instância de Compras, passando a conexão para ela.
 
-      - 📥 carregar_clientes
+      - 📥 carregar_clientes(bd_config)
         - Consulta todos os clientes cadastrados na tabela clientes.
 
         - Armazena os resultados e os nomes das colunas para exibição com tabulate.
@@ -273,5 +296,108 @@ O código acima define uma classe chamada ConectarBanco, responsável por gerenc
 
   - O uso de tabulate ajuda na visualização limpa dos dados diretamente no terminal.
 
- - O sistema é interativo e robusto para lidar com diferentes entradas e situações comuns.
+  - O sistema é interativo e robusto para lidar com diferentes entradas e situações comuns.
+----
+## Controle de Compras
+A classe Compras é responsável por gerenciar o processo de compra dos clientes, desde a escolha dos produtos até o pagamento, com suporte para alterações no carrinho, remoção de itens e cancelamento da compra
 
+- 📦 Funções principais
+  - 🔍 carregar_produtos(categoriaEscolhida)
+     - Exibe os produtos disponíveis em uma categoria específica, utilizando menus interativos. Permite navegar entre as categorias e visualizar os itens de forma formatada.
+
+  - 🛍️ adicionar_ao_carrinho(idcliente)
+    - Fluxo completo de compra:
+
+    - Seleciona produto e quantidade.
+
+    - Verifica se o item já está no carrinho.
+
+    - Insere ou atualiza registros na tabela itenspedidos.
+
+    - Exibe o carrinho atualizado e oferece opções como:
+
+       - Comprar mais
+  
+       - Remover item
+  
+       - Diminuir quantidade
+  
+       - Encerrar compra
+  
+       - Cancelar tudo
+
+ - 📤 carregar_pedidos(idcliente)
+    - Cria um novo pedido associado ao cliente atual, com um pagamento pendente (ID = 4).
+
+ - 💳 pagamento(idcliente)
+    - Apresenta o total da compra e solicita a forma de pagamento:
+
+      - Dinheiro
+      
+      - Pix
+      
+      - Cartão (com entrada em débito ou parcelamento no crédito)
+
+ - 💰 pagar_em_cartao(total)
+    - Gera simulações de parcelamento dependendo do valor total:
+
+      - Até 2x para compras pequenas
+      
+      - Até 12x para valores maiores
+
+ - 🧾 atualizar_pagamento(idpagamento, idcliente)
+    - Atualiza o método de pagamento escolhido na tabela pedidos.
+
+ - 🧰 Ações sobre o Carrinho
+    - ❌ remover_item(idcliente)
+       - Permite remover itens específicos do carrinho via ID. Exibe todos os itens atuais do cliente e garante que ao menos um item permaneça no carrinho para manter a consistência.
+    
+    - ➖ diminuir_quantidade(idcliente, valorTotal)
+       -  Diminui a quantidade de um item. Se a quantidade for zerada, o item é removido. Caso o carrinho fique vazio após a remoção, o pedido é automaticamente cancelado.
+    
+    - 🗑️ cancelar_compra(idcliente)
+       - Pergunta ao usuário se ele deseja cancelar a compra. Se confirmado, remove todos os itens e o pedido correspondente do banco de dados.
+    
+  - 🧠 Observações
+    - Todas as operações são protegidas com try/except para entradas inválidas.
+    
+    - O terminal interativo é amigável e orienta o usuário com mensagens e validações claras.
+    
+    - A integração com colorama, tabulate e time melhora a visualização, leitura e experiência do usuário.
+  ----
+  ## main.py
+  O arquivo main.py é o início da execução do sistema. Ele é responsável por carregar a configuração do banco de dados, instanciar o menu principal e acionar a aplicação interativa de gerenciamento de compras.
+
+  - 📌 Funcionalidades
+  
+    - Instancia a classe Menu:
+    
+      - Responsável por gerenciar as interações com clientes e gerentes.
+    
+      - Carrega variáveis de ambiente com dotenv:
+      
+      - Protege dados sensíveis como host, user, password e database, que são carregados de um arquivo .env.
+      
+    - Monta um dicionário de configuração (bd_config):
+    
+      - Passado para o sistema como parâmetro para que a conexão com o banco seja feita de forma dinâmica e segura.
+      
+    - Bloco try/except robusto:
+    
+      - Captura três tipos de erro:
+    
+        - mysql.connector.Error: erros de banco (como tabelas inexistentes, credenciais erradas etc.).
+        
+        - mysql.connector.InterfaceError: falhas de comunicação com o banco.
+        
+        - Exception: outros erros genéricos.
+  
+  - 🔒 Segurança
+  
+    - Este script usa a biblioteca python-dotenv para carregar variáveis do .env, impedindo que as credenciais do banco sejam expostas no código-fonte. Isso segue boas práticas de segurança em aplicações Python.
+  ----
+  ## 📺 Demonstração em vídeo
+
+    Veja a aplicação rodando ao vivo no VS Code:
+
+  👉 [Clique aqui para assistir no YouTube](https://youtube.com/seulink)
