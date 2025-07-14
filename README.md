@@ -400,4 +400,4 @@ A classe Compras é responsável por gerenciar o processo de compra dos clientes
 
     Veja a aplicação rodando ao vivo no VS Code:
 
-  👉 [Clique aqui para assistir no YouTube](https://youtube.com/seulink)
+  👉 [Clique aqui para assistir no YouTube](https://youtube.com/https://youtu.be/Cib2GaRyIWU)
